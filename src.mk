@@ -1,0 +1,1 @@
+SRCS += srcs/sh.c
