@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 17:09:14 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/10 22:11:51 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/11 19:14:33 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "sh.h"
+#include "libft.h"
 
 struct termios	g_original_termios;
 
@@ -37,25 +39,85 @@ void	sh_setup_raw_mode(void)
 	atexit(sh_reset_raw_mode);
 }
 
+void	move_cursor(t_command *cmd, t_sh *shell, ssize_t move)
+{
+	if ((move < 0 && shell->cursor.x + move >= 0)
+			|| (move > 0 && shell->cursor.x + (size_t)move <= cmd->len))
+		shell->cursor.x += move;
+}
+
+void	sh_cli_handlers(t_sh *shell, t_reader *reader, t_command *cmd, char c)
+{
+	char	cnext;
+
+	if (c == 0x4)
+	{
+		ft_putf("exit\n");
+		exit(0);
+	}
+	else if (c == 0x1b)
+	{
+		sh_getchar(reader, STDIN_FILENO, &cnext);
+		if (cnext == '[')
+		{
+			sh_getchar(reader, STDIN_FILENO, &cnext);
+			if (cnext == 'C' || cnext == 'D')
+				move_cursor(cmd, shell, cnext == 'C' ? 1 : -1);
+		}
+	}
+	else if (c == 0x7f)
+	{
+		sh_command_del(cmd);
+		move_cursor(cmd, shell, -1);
+	}
+	else if (c == 0x5 || c == 0x1)
+		move_cursor(cmd, shell, c == 0x1 ? -shell->cursor.x : cmd->len - shell->cursor.x);
+	else
+		sh_command_cat(cmd, shell, c);
+}
+
+void	sh_init(t_sh *sh)
+{
+	*sh = (t_sh) {
+		.cursor = { 0, 0 },
+		.primary_color = BLUE,
+	};
+	ft_strcpy(sh->name, "Minishell Improved");
+	sh->name_len = ft_strlen(sh->name);
+	sh_setup_raw_mode();
+}
+
 int		main(int argc, char **argv, char **envp)
 {
 	(void)argc, (void)argv, (void)envp;
-	char	buffer[4096];
-	size_t	bytes;
-	size_t	total;
+	static char	c[2] = { 0 };
+	size_t		total;
+	t_sh		shell;
+	t_reader	reader;
+	t_command	cmd;
 
-	sh_setup_raw_mode();
 	total = 0;
+	sh_init(&shell);
 	while (42)
 	{
-		if ((bytes = read(0, buffer, 4096)) > 0)
+		shell.cursor = (struct s_cursor) { 0, 0 };
+		reader_init(&reader);
+		command_init(&cmd);
+		ft_putf(CSI "G" CSI "K" PROMPT_FG_COLOUR "%s" COLOUR_RESET " > ", shell.name);
+		while (42)
 		{
-			total += bytes;
-			printf("bytes = %zu\n", bytes);
-			if (*buffer == 'q')
-				break ;
-			write(1, buffer, 1);
+			if (cmd.str != NULL)
+				ft_putf(CSI "%dG" CSI "K" "%s" CSI "%dG", shell.name_len + 4, cmd.str, shell.name_len + 4 + shell.cursor.x);
+			if (sh_getchar(&reader, STDIN_FILENO, c + 1) > 0)
+			{
+				sh_cli_handlers(&shell, &reader, &cmd, c[1]);
+				if (c[1] == 0x3)
+					break ;
+				*c = c[1];
+			}
 		}
+		ft_putchar('\n');
 	}
 	printf("total = %zu\n", total);
+	ft_putf(cmd.str);
 }
