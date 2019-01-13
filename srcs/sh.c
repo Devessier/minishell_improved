@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 17:09:14 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/11 21:46:58 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/13 16:31:20 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,13 +75,13 @@ void	sh_cli_handlers(t_sh *shell, t_reader *reader, t_command *cmd, char c, char
 		ft_putchar(0x7);
 }
 
-void	sh_init(t_sh *sh)
+void	sh_init(t_sh *sh, const char *name)
 {
 	*sh = (t_sh) {
 		.cursor = { 0, 0 },
 		.primary_color = BLUE,
 	};
-	ft_strcpy(sh->name, "Minishell Improved");
+	ft_strcpy(sh->name, name);
 	sh->name_len = ft_strlen(sh->name);
 	sh_setup_raw_mode();
 }
@@ -94,7 +94,7 @@ int		main(int argc, char **argv, char **envp)
 	t_reader	reader;
 	t_command	cmd;
 
-	sh_init(&shell);
+	sh_init(&shell, "Minishell Improved");
 	while (42)
 	{
 		shell.cursor = (struct s_cursor) { 0, 0 };
