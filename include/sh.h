@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 20:29:24 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/11 19:11:50 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/11 21:16:09 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define SH_H
 # include <sys/types.h>
 # include <stdint.h>
+# include <stdbool.h>
 # define SHELL_NAME_LEN 1 << 8
 # define BUFF_SIZE 4096
 # define CSI "\x1b["
@@ -62,8 +63,9 @@ typedef struct		s_command
 
 void				reader_init(t_reader *this);
 void				command_init(t_command *this);
+void				move_cursor(t_command *this, t_sh *shell, ssize_t move);
 int					sh_command_cat(t_command *this, t_sh *sh, char c);
-void				sh_command_del(t_command *cmd);
+void				sh_command_del(t_command *cmd, t_sh *sh, bool current);
 ssize_t				sh_getchar(t_reader *this, const int fd, char *c);
 
 #endif

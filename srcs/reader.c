@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 20:41:45 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/11 18:49:53 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/11 21:28:28 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,18 +56,23 @@ int		sh_command_cat(t_command *this, t_sh *sh, char c)
 		this->str[this->len++] = c;
 	else
 	{
-		ft_memmove(this->str + sh->cursor.x + 1, this->str + sh->cursor.x, this->len - sh->cursor.x);
+		ft_memmove(this->str + sh->cursor.x + 1,
+			this->str + sh->cursor.x, this->len - sh->cursor.x);
 		this->str[sh->cursor.x] = c;
 		this->len++;
 	}
-	sh->cursor.x++;
-	return (0);
+	return (sh->cursor.x++ & 0);
 }
 
-void	sh_command_del(t_command *cmd)
+void	sh_command_del(t_command *this, t_sh *sh, bool current)
 {
-	if (cmd->len > 0)
-		cmd->str[--cmd->len] = '\0';
+	if (this->len <= 0 || (current && sh->cursor.x <= 0))
+		return ft_putchar(0x7);
+	ft_strcpy(this->str + sh->cursor.x + (current ? -1 : 0),
+		this->str + sh->cursor.x + (current ? 0 : 1));
+	this->len--;
+	if (current)
+		move_cursor(this, sh, -1);
 }
 
 ssize_t	sh_getchar(t_reader *this, const int fd, char *c)

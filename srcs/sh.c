@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 17:09:14 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/11 19:14:33 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/11 21:46:58 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,11 +46,11 @@ void	move_cursor(t_command *cmd, t_sh *shell, ssize_t move)
 		shell->cursor.x += move;
 }
 
-void	sh_cli_handlers(t_sh *shell, t_reader *reader, t_command *cmd, char c)
+void	sh_cli_handlers(t_sh *shell, t_reader *reader, t_command *cmd, char c, char prev)
 {
 	char	cnext;
 
-	if (c == 0x4)
+	if (c == 0x4 && cmd->len == 0)
 	{
 		ft_putf("exit\n");
 		exit(0);
@@ -65,15 +65,14 @@ void	sh_cli_handlers(t_sh *shell, t_reader *reader, t_command *cmd, char c)
 				move_cursor(cmd, shell, cnext == 'C' ? 1 : -1);
 		}
 	}
-	else if (c == 0x7f)
-	{
-		sh_command_del(cmd);
-		move_cursor(cmd, shell, -1);
-	}
+	else if (c == 0x7f || (c == 0x4 && shell->cursor.x < cmd->len))
+		sh_command_del(cmd, shell, c == 0x7f);
 	else if (c == 0x5 || c == 0x1)
 		move_cursor(cmd, shell, c == 0x1 ? -shell->cursor.x : cmd->len - shell->cursor.x);
-	else
+	else if (ft_isprint(c) && ((c == ' ' && prev != ' ') || c != ' '))
 		sh_command_cat(cmd, shell, c);
+	else if (c == 0x4)
+		ft_putchar(0x7);
 }
 
 void	sh_init(t_sh *sh)
@@ -91,12 +90,10 @@ int		main(int argc, char **argv, char **envp)
 {
 	(void)argc, (void)argv, (void)envp;
 	static char	c[2] = { 0 };
-	size_t		total;
 	t_sh		shell;
 	t_reader	reader;
 	t_command	cmd;
 
-	total = 0;
 	sh_init(&shell);
 	while (42)
 	{
@@ -110,14 +107,11 @@ int		main(int argc, char **argv, char **envp)
 				ft_putf(CSI "%dG" CSI "K" "%s" CSI "%dG", shell.name_len + 4, cmd.str, shell.name_len + 4 + shell.cursor.x);
 			if (sh_getchar(&reader, STDIN_FILENO, c + 1) > 0)
 			{
-				sh_cli_handlers(&shell, &reader, &cmd, c[1]);
-				if (c[1] == 0x3)
+				sh_cli_handlers(&shell, &reader, &cmd, c[1], *c);
+				if ((*c = c[1]) == 0x3)
 					break ;
-				*c = c[1];
 			}
 		}
 		ft_putchar('\n');
 	}
-	printf("total = %zu\n", total);
-	ft_putf(cmd.str);
 }
