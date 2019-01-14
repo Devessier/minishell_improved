@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 17:09:14 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/13 16:31:20 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/14 09:26:01 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@ void	sh_setup_raw_mode(void)
 	tcgetattr(0, &g_original_termios);
 	raw_termios = g_original_termios;
 	raw_termios.c_iflag &= ~(ICRNL | IXON);
-	raw_termios.c_oflag &= ~(OPOST);
 	raw_termios.c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG);
 	raw_termios.c_cc[VMIN] = 0;
 	raw_termios.c_cc[VTIME] = 1;
