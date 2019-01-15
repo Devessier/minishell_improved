@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/15 09:34:03 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/15 13:28:02 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/15 14:50:39 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,8 @@
 
 int		sh_exec(t_command *cmd, t_sh *sh)
 {
-	(void)cmd, (void)sh;
-	ft_putf("\ns = |%s|\n", cmd->string.str);
+	(void)sh;
+	if (!sh_lexer(cmd))
+		return (0);
 	return (0);
 }

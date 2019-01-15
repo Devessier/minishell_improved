@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 20:29:24 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/15 12:22:34 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/15 16:11:46 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,12 +32,20 @@ typedef struct		s_tring
 	char	*str;
 }					t_string;
 
-typedef enum		e_token
+typedef enum		e_token_char
 {
+	T_LAMBDA,
 	T_DQUOTE,
 	T_SQUOTE,
 	T_WHITESPACE,
 	T_SEMICOLON,
+	T_ESCAPE,
+}					t_oken_char;
+
+typedef struct		s_token
+{
+	string		payload;
+	t_oken_char	type;
 }					t_oken;
 
 typedef enum		e_lexer_state
@@ -46,6 +54,13 @@ typedef enum		e_lexer_state
 	IN_SQUOTE,
 	GLOBAL_SCOPE
 }					t_lexer_state;
+
+typedef struct		s_lexer
+{
+	size_t			len;
+	t_lexer_state	state;
+	t_oken			tokens[];
+}					t_lexer;
 
 struct				s_cursor
 {
@@ -93,7 +108,5 @@ int					sh_exec(t_command *cmd, t_sh *sh);
 t_string			new_string(char *c, bool char_mode);
 bool				concat_strings(t_string *this, char *str);
 bool				extend_string(t_string *this, size_t size);
-
-extern t_oken		g_tokens[];
 
 #endif
