@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 20:41:45 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/11 21:28:28 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/15 14:33:18 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,50 +27,40 @@ void	reader_init(t_reader *this)
 
 void	command_init(t_command *this)
 {
+	free(this->string.str);
 	*this = (t_command) {
-		.len = 0,
-		.cap = 0,
-		.str = NULL
+		.cursor = 0,
+		.string = (t_string) {
+			.len = 0,
+			.cap = 0,
+			.str = NULL
+		}
 	};
 }
 
 int		sh_command_cat(t_command *this, t_sh *sh, char c)
 {
-	const size_t	remaining = this->cap - this->len;
-	char			*tmp;
-	size_t			cap;
-
-	if (remaining < 1)
-	{
-		cap = this->cap == 0 ? 10 : this->cap;
-		tmp = this->str;
-		cap *= cap > 1024 ? 1.5 : 2;
-		if (!(this->str = ft_strnew(cap)))
-			return (-1);
-		this->cap = cap;
-		if (tmp != NULL)
-			ft_strcpy(this->str, tmp);
-		free(tmp);
-	}
-	if (sh->cursor.x == this->len)
-		this->str[this->len++] = c;
+	if (!extend_string(&this->string, 1))
+		return (-1);
+	if (sh->cursor.x == this->string.len)
+		this->string.str[this->string.len++] = c;
 	else
 	{
-		ft_memmove(this->str + sh->cursor.x + 1,
-			this->str + sh->cursor.x, this->len - sh->cursor.x);
-		this->str[sh->cursor.x] = c;
-		this->len++;
+		ft_memmove(this->string.str + sh->cursor.x + 1,
+			this->string.str + sh->cursor.x, this->string.len - sh->cursor.x);
+		this->string.str[sh->cursor.x] = c;
+		this->string.len++;
 	}
 	return (sh->cursor.x++ & 0);
 }
 
 void	sh_command_del(t_command *this, t_sh *sh, bool current)
 {
-	if (this->len <= 0 || (current && sh->cursor.x <= 0))
+	if (this->string.len <= 0 || (current && sh->cursor.x <= 0))
 		return ft_putchar(0x7);
-	ft_strcpy(this->str + sh->cursor.x + (current ? -1 : 0),
-		this->str + sh->cursor.x + (current ? 0 : 1));
-	this->len--;
+	ft_strcpy(this->string.str + sh->cursor.x + (current ? -1 : 0),
+		this->string.str + sh->cursor.x + (current ? 0 : 1));
+	this->string.len--;
 	if (current)
 		move_cursor(this, sh, -1);
 }

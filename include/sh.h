@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 20:29:24 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/11 21:16:09 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/15 12:22:34 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,28 @@
 # define RIGHT_CURSOR CSI "D"
 # define PROMPT_FG_COLOUR CSI "38;5;45m"
 # define COLOUR_RESET CSI "0m"
+
+typedef struct		s_tring
+{
+	size_t	len;
+	size_t	cap;
+	char	*str;
+}					t_string;
+
+typedef enum		e_token
+{
+	T_DQUOTE,
+	T_SQUOTE,
+	T_WHITESPACE,
+	T_SEMICOLON,
+}					t_oken;
+
+typedef enum		e_lexer_state
+{
+	IN_DQUOTE,
+	IN_SQUOTE,
+	GLOBAL_SCOPE
+}					t_lexer_state;
 
 struct				s_cursor
 {
@@ -55,10 +77,8 @@ typedef struct		s_reader
 
 typedef struct		s_command
 {
-	size_t			len;
-	size_t			cap;
 	size_t			cursor;
-	char			*str;
+	t_string		string;
 }					t_command;
 
 void				reader_init(t_reader *this);
@@ -67,5 +87,13 @@ void				move_cursor(t_command *this, t_sh *shell, ssize_t move);
 int					sh_command_cat(t_command *this, t_sh *sh, char c);
 void				sh_command_del(t_command *cmd, t_sh *sh, bool current);
 ssize_t				sh_getchar(t_reader *this, const int fd, char *c);
+bool				sh_lexer(t_command *cmd);
+int					sh_exec(t_command *cmd, t_sh *sh);
+
+t_string			new_string(char *c, bool char_mode);
+bool				concat_strings(t_string *this, char *str);
+bool				extend_string(t_string *this, size_t size);
+
+extern t_oken		g_tokens[];
 
 #endif

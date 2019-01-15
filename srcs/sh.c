@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 17:09:14 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/14 09:26:01 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/15 14:30:08 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void	sh_setup_raw_mode(void)
 void	move_cursor(t_command *cmd, t_sh *shell, ssize_t move)
 {
 	if ((move < 0 && shell->cursor.x + move >= 0)
-			|| (move > 0 && shell->cursor.x + (size_t)move <= cmd->len))
+			|| (move > 0 && shell->cursor.x + (size_t)move <= cmd->string.len))
 		shell->cursor.x += move;
 }
 
@@ -49,7 +49,7 @@ void	sh_cli_handlers(t_sh *shell, t_reader *reader, t_command *cmd, char c, char
 {
 	char	cnext;
 
-	if (c == 0x4 && cmd->len == 0)
+	if (c == 0x4 && cmd->string.len == 0)
 	{
 		ft_putf("exit\n");
 		exit(0);
@@ -64,10 +64,10 @@ void	sh_cli_handlers(t_sh *shell, t_reader *reader, t_command *cmd, char c, char
 				move_cursor(cmd, shell, cnext == 'C' ? 1 : -1);
 		}
 	}
-	else if (c == 0x7f || (c == 0x4 && shell->cursor.x < cmd->len))
+	else if (c == 0x7f || (c == 0x4 && shell->cursor.x < cmd->string.len))
 		sh_command_del(cmd, shell, c == 0x7f);
 	else if (c == 0x5 || c == 0x1)
-		move_cursor(cmd, shell, c == 0x1 ? -shell->cursor.x : cmd->len - shell->cursor.x);
+		move_cursor(cmd, shell, c == 0x1 ? -shell->cursor.x : cmd->string.len - shell->cursor.x);
 	else if (ft_isprint(c) && ((c == ' ' && prev != ' ') || c != ' '))
 		sh_command_cat(cmd, shell, c);
 	else if (c == 0x4)
@@ -99,18 +99,20 @@ int		main(int argc, char **argv, char **envp)
 		shell.cursor = (struct s_cursor) { 0, 0 };
 		reader_init(&reader);
 		command_init(&cmd);
-		ft_putf(CSI "G" CSI "K" PROMPT_FG_COLOUR "%s" COLOUR_RESET " > ", shell.name);
+		ft_putf(CSI "G" CSI "J" PROMPT_FG_COLOUR "%s" COLOUR_RESET " > ", shell.name);
 		while (42)
 		{
-			if (cmd.str != NULL)
-				ft_putf(CSI "%dG" CSI "K" "%s" CSI "%dG", shell.name_len + 4, cmd.str, shell.name_len + 4 + shell.cursor.x);
+			if (cmd.string.str != NULL)
+				ft_putf(CSI "%dG" CSI "J" "%s" CSI "%dG", shell.name_len + 4, cmd.string.str, shell.name_len + 4 + shell.cursor.x);
 			if (sh_getchar(&reader, STDIN_FILENO, c + 1) > 0)
 			{
 				sh_cli_handlers(&shell, &reader, &cmd, c[1], *c);
-				if ((*c = c[1]) == 0x3)
+				if ((*c = c[1]) == 0x3 || *c == 0xd)
 					break ;
 			}
 		}
+		if (*c == 0xd)
+			sh_exec(&cmd, &shell);
 		ft_putchar('\n');
 	}
 }
