@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 20:29:24 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/15 16:11:46 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/16 13:24:05 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,13 +40,21 @@ typedef enum		e_token_char
 	T_WHITESPACE,
 	T_SEMICOLON,
 	T_ESCAPE,
+	T_WORD,
 }					t_oken_char;
 
 typedef struct		s_token
 {
-	string		payload;
+	t_string	payload;
 	t_oken_char	type;
 }					t_oken;
+
+typedef enum		e_lexer_return
+{
+	L_MALLOC_ERROR,
+	L_SYNTAX_ERROR,
+	L_PERFECT
+}					t_lexer_return;
 
 typedef enum		e_lexer_state
 {
@@ -102,11 +110,11 @@ void				move_cursor(t_command *this, t_sh *shell, ssize_t move);
 int					sh_command_cat(t_command *this, t_sh *sh, char c);
 void				sh_command_del(t_command *cmd, t_sh *sh, bool current);
 ssize_t				sh_getchar(t_reader *this, const int fd, char *c);
-bool				sh_lexer(t_command *cmd);
+t_lexer_return		sh_lexer(t_command *cmd);
 int					sh_exec(t_command *cmd, t_sh *sh);
 
 t_string			new_string(char *c, bool char_mode);
-bool				concat_strings(t_string *this, char *str);
+bool				concat_strings(t_string *this, char *str, size_t len);
 bool				extend_string(t_string *this, size_t size);
 
 #endif

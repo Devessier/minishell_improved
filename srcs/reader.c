@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 20:41:45 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/15 14:33:18 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/16 13:18:07 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@ void	reader_init(t_reader *this)
 
 void	command_init(t_command *this)
 {
-	free(this->string.str);
 	*this = (t_command) {
 		.cursor = 0,
 		.string = (t_string) {

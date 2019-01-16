@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/15 09:30:25 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/15 16:43:01 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/16 13:24:22 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,13 @@ static const t_oken_char	g_tokens[1 << 7] = {
 	['\\'] = T_ESCAPE,
 };
 
-void						init_lexer(t_lexer *lexer)
+bool						init_lexer(t_lexer **lexer)
 {
-	*lexer = (t_lexer) {
-		.len = 0,
-		.state = GLOBAL_SCOPE
-	};
+	if (!(*lexer = malloc(sizeof(t_lexer))))
+		return (false);
+	(*lexer)->len = 0;
+	(*lexer)->state = GLOBAL_SCOPE;
+	return (true);
 }
 
 void						copy_lexer(t_lexer *new, t_lexer *old)
@@ -42,64 +43,58 @@ void						copy_lexer(t_lexer *new, t_lexer *old)
 	free(new);
 }
 
-bool						append_token(t_lexer *lexer, size_t index, char c, t_oken_char token_c)
+bool						append_token(t_lexer *lexer, char *str, size_t len, t_oken_char token_c)
 {
-	t_lexer		*tmp;
-	t_string	*string;
+	t_oken	tok;
+	t_lexer	*tmp;
+	size_t	i;
 
-	if (index < lexer->len)
+	tok = (t_oken) { .payload = { 0, 0, NULL }, .type = token_c };
+	if (str != NULL)
 	{
-		string = &lexer->tokens[index].string;
-		if (!extend_string(string, 1))
+		if (!concat_strings(&tok.payload, str, len))
 			return (false);
-		string->str[string->len++] = c;
+		ft_putf("payload = |%s|\n", tok.payload);
 	}
-	else
+	if (!(tmp = malloc(sizeof(t_lexer) + sizeof(t_oken) * (lexer->len + 1))))
 	{
-		if ((*string = new_string(&c, true)).cap > 0)
-			return (false);
-		// free underlying string
-		if (!(tmp = malloc(sizeof(t_lexer) + sizeof(t_oken) * (lexer->len + 1))))
-			return (false);
-		copy_lexer(tmp, lexer);
-		*lexer = tmp;
+		if (tok.payload.str != NULL)
+			free(tok.payload.str);
+		return (false);
 	}
+	i = 0;
+	tmp->len = lexer->len + 1;
+	tmp->state = lexer->state;
+	while (i++ < lexer->len)
+		tmp->tokens[i - 1] = lexer->tokens[i - 1];
+	free(lexer);
 	return (true);
 }
 
-bool						append_string(t_lexer *lexer, char *str, char delim)
+t_lexer_return				sh_lexer(t_command *cmd)
 {
-	const char	*tmp = ft_strchr(str, delim);
-	
-	if (tmp == NULL)
-		return (false);
-
-}
-
-bool						sh_lexer(t_command *cmd)
-{
-	const uint8_t	*start = (uint8_t *)cmd->string.str;
 	t_lexer			*lexer;
 	uint8_t			*tmp;
 	t_oken_char		toks[2];
+	char			*pointer;
 
-	init_lexer(lexer);
-	tmp = start;
+	lexer = NULL;
+	if (!init_lexer(&lexer))
+		return (L_MALLOC_ERROR);
+	tmp = (uint8_t *)cmd->string.str;
 	while (*tmp != '\0')
 	{
 		*toks = g_tokens[*tmp];
 		if (*toks == T_DQUOTE || *toks == T_SQUOTE)
 		{
 			lexer->state = *toks == T_DQUOTE ? IN_DQUOTE : IN_SQUOTE;
-			while ()
-			append_token(lexer, start - tmp, *tmp, *toks);
-		}
-		else if (*toks = T_SQUOTE)
-		{
-			lexer->state = IN_SQUOTE;
+			pointer = ft_strchr((char *)tmp + 1, *tmp);
+			if (pointer == NULL)
+				return (L_SYNTAX_ERROR);
+			append_token(lexer, (char *)tmp, pointer - (char *)tmp - 1, *toks);
 		}
 		toks[1] = *toks;
 		tmp++;
 	}
-	return (state == GLOBAL_SCOPE);
+	return (lexer->state == GLOBAL_SCOPE ? L_PERFECT : L_SYNTAX_ERROR);
 }
