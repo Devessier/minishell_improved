@@ -6,13 +6,15 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/15 09:30:25 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/16 13:24:22 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/17 18:08:33 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sh.h"
 #include "libft.h"
 #include <stdbool.h>
+#include <stdio.h>
+#include <unistd.h>
 
 static const t_oken_char	g_tokens[1 << 7] = {
 	['\"'] = T_DQUOTE,
@@ -20,15 +22,26 @@ static const t_oken_char	g_tokens[1 << 7] = {
 	[' '] = T_WHITESPACE,
 	[';'] = T_SEMICOLON,
 	['\\'] = T_ESCAPE,
+	['&'] = T_AMPERSAND,
+	['|'] = T_PIPE,
 };
 
-bool						init_lexer(t_lexer **lexer)
+void						init_token(t_oken *tok)
 {
-	if (!(*lexer = malloc(sizeof(t_lexer))))
-		return (false);
-	(*lexer)->len = 0;
-	(*lexer)->state = GLOBAL_SCOPE;
-	return (true);
+	*tok = (t_oken) {
+		.payload = { 0, 0, NULL },
+		.type = T_WORD,
+	};
+}
+
+void						init_lexer(t_lexer *lexer)
+{
+	*lexer = (t_lexer) {
+		.len = 0,
+		.cap = 0,
+		.state = GLOBAL_SCOPE,
+		.tokens = NULL
+	};
 }
 
 void						copy_lexer(t_lexer *new, t_lexer *old)
@@ -43,58 +56,124 @@ void						copy_lexer(t_lexer *new, t_lexer *old)
 	free(new);
 }
 
-bool						append_token(t_lexer *lexer, char *str, size_t len, t_oken_char token_c)
+size_t						append_token_env_var(t_oken *tok, char *str)
 {
-	t_oken	tok;
-	t_lexer	*tmp;
+	size_t	i;
+	char	*env_value;
+
+	++str;
+	if (*str == '$')
+	{
+		env_value = ft_itoa(getpid());
+		concat_strings(&tok->payload, env_value, ft_strlen(env_value));
+		free(env_value);
+		return (1);
+	}
+	if (!(*str == '_' || ft_isalpha(*str)))
+		return (0);
+	i = 0;
+	while (i[str] && (ft_isalnum(i[str]) || i[str] == '_'))
+		i++;
+	if (i > 0)
+	{
+		env_value = sh_get_env(str, i);
+		concat_strings(&tok->payload, env_value, ft_strlen(env_value));
+	}
+	return (i);
+}
+
+bool						append_token(t_lexer *this, size_t index, t_oken token)
+{
+	t_oken	*tmp;
+	size_t	cap;
 	size_t	i;
 
-	tok = (t_oken) { .payload = { 0, 0, NULL }, .type = token_c };
-	if (str != NULL)
+	cap = this->cap == 0 ? 2 : this->cap;
+	if (index + 1 > this->cap)
 	{
-		if (!concat_strings(&tok.payload, str, len))
+		cap <<= 1;
+		tmp = this->tokens;
+		if (!(this->tokens = malloc(sizeof(t_oken) * cap)))
 			return (false);
-		ft_putf("payload = |%s|\n", tok.payload);
+		i = 0;
+		while (i++ < this->len)
+			this->tokens[i - 1] = tmp[i - 1];
+		free(tmp);
 	}
-	if (!(tmp = malloc(sizeof(t_lexer) + sizeof(t_oken) * (lexer->len + 1))))
-	{
-		if (tok.payload.str != NULL)
-			free(tok.payload.str);
-		return (false);
-	}
-	i = 0;
-	tmp->len = lexer->len + 1;
-	tmp->state = lexer->state;
-	while (i++ < lexer->len)
-		tmp->tokens[i - 1] = lexer->tokens[i - 1];
-	free(lexer);
+	this->tokens[this->len++] = token;
 	return (true);
 }
 
-t_lexer_return				sh_lexer(t_command *cmd)
+bool						lexer_algorithm(t_lexer *lexer, uint8_t *str)
 {
-	t_lexer			*lexer;
-	uint8_t			*tmp;
-	t_oken_char		toks[2];
-	char			*pointer;
+	t_oken_char	types[2];
+	size_t		tmp;
+	size_t		i;
+	t_oken		tok;
 
-	lexer = NULL;
-	if (!init_lexer(&lexer))
-		return (L_MALLOC_ERROR);
-	tmp = (uint8_t *)cmd->string.str;
-	while (*tmp != '\0')
+	ft_bzero(types, 2 * sizeof(t_oken_char));
+	init_lexer(lexer);
+	init_token(&tok);
+	i = 0;
+	while (*str != '\0')
 	{
-		*toks = g_tokens[*tmp];
-		if (*toks == T_DQUOTE || *toks == T_SQUOTE)
+		*types = g_tokens[*str];
+		if (*str == '#')
+			break ;
+		if (*str == '$' && lexer->state != IN_SQUOTE)
 		{
-			lexer->state = *toks == T_DQUOTE ? IN_DQUOTE : IN_SQUOTE;
-			pointer = ft_strchr((char *)tmp + 1, *tmp);
-			if (pointer == NULL)
-				return (L_SYNTAX_ERROR);
-			append_token(lexer, (char *)tmp, pointer - (char *)tmp - 1, *toks);
+			tmp = append_token_env_var(&tok, (char *)str);
+			if (tmp > 0)
+				str += tmp;
+			else if (!concat_strings(&tok.payload, "$", 1))
+				return (false);
 		}
-		toks[1] = *toks;
-		tmp++;
+		else if (lexer->state == GLOBAL_SCOPE)
+		{
+			if (types[1] == *types && (*types == T_AMPERSAND || *types == T_PIPE))
+			{
+				ft_putf("ampersand\n");
+				if (!concat_strings(&tok.payload, (char *)str, 1))
+					return (false);
+			}
+			if (*types == T_DQUOTE || *types == T_SQUOTE)
+				lexer->state = *types == T_DQUOTE ? IN_DQUOTE : IN_SQUOTE;
+			else if (*types == T_ESCAPE && str[1] != '\0' && !concat_strings(&tok.payload, (char *)++str, 1))
+				return (false);
+			else if (*types == T_WHITESPACE)
+			{
+				if (!append_token(lexer, i++, tok))
+					return (false);
+				// Don't forget to free the previous string
+				init_token(&tok);
+			}
+			else if (!concat_strings(&tok.payload, (char *)str, 1))
+				return (false);
+		}
+		else
+		{
+			if ((uint8_t)*types == (uint8_t)lexer->state)
+				lexer->state = GLOBAL_SCOPE;
+			else if (*types == T_ESCAPE && lexer->state == IN_DQUOTE && str[1] != '\0' && (str[1] == '$' || str[1] == '`' || str[1] == '\"' || str[1] == '\\' || str[1] == '\n'))
+			{
+				if (!(concat_strings(&tok.payload, (char *)++str, 1)))
+					return (false);
+			}
+			else if (!concat_strings(&tok.payload, (char *)str, 1))
+				return (false);
+		}
+		types[1] = *types;
+		str++;
 	}
-	return (lexer->state == GLOBAL_SCOPE ? L_PERFECT : L_SYNTAX_ERROR);
+	if (tok.payload.len > 0)
+		append_token(lexer, i, tok);
+	return (true);
+}
+
+t_lexer						sh_lexer(t_command *cmd)
+{
+	t_lexer			lexer;
+
+	lexer_algorithm(&lexer, (uint8_t *)cmd->string.str);
+	return (lexer);
 }

@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/15 11:25:30 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/16 12:36:17 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/17 12:13:19 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,20 +59,24 @@ bool		concat_strings(t_string *this, char *str, size_t len)
 	char			*tmp;
 
 	cap = this->cap;
-	if (this->len + len < this->cap)
+	if (this->len + len > this->cap)
 	{
 		if (len > cap * 2)
 			cap += len * 2;
 		else
 			cap *= 2;
-		if (!(tmp = ft_strnew(this->cap)))
+		if (!(tmp = ft_strnew(cap)))
 			return (false);
-		ft_strcat(tmp, this->str);
+		if (str != NULL && this->len > 0)
+			ft_strcat(tmp, this->str);
 		this->cap = cap;
 		free(this->str);
 		this->str = tmp;
 	}
-	ft_strncat(this->str, str, len);
-	this->len += len;
+	if (str != NULL)
+	{
+		ft_strncat(this->str, str, len);
+		this->len += len;
+	}
 	return (true);
 }

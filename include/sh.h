@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 20:29:24 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/16 13:24:05 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/17 16:34:44 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,13 +34,14 @@ typedef struct		s_tring
 
 typedef enum		e_token_char
 {
-	T_LAMBDA,
-	T_DQUOTE,
-	T_SQUOTE,
+	T_DQUOTE = 1,
+	T_SQUOTE = 2,
 	T_WHITESPACE,
 	T_SEMICOLON,
 	T_ESCAPE,
-	T_WORD,
+	T_AMPERSAND,
+	T_PIPE,
+	T_WORD = 0,
 }					t_oken_char;
 
 typedef struct		s_token
@@ -49,25 +50,19 @@ typedef struct		s_token
 	t_oken_char	type;
 }					t_oken;
 
-typedef enum		e_lexer_return
-{
-	L_MALLOC_ERROR,
-	L_SYNTAX_ERROR,
-	L_PERFECT
-}					t_lexer_return;
-
 typedef enum		e_lexer_state
 {
-	IN_DQUOTE,
-	IN_SQUOTE,
+	IN_DQUOTE = 1,
+	IN_SQUOTE = 2,
 	GLOBAL_SCOPE
 }					t_lexer_state;
 
 typedef struct		s_lexer
 {
 	size_t			len;
+	size_t			cap;
 	t_lexer_state	state;
-	t_oken			tokens[];
+	t_oken			*tokens;
 }					t_lexer;
 
 struct				s_cursor
@@ -110,11 +105,13 @@ void				move_cursor(t_command *this, t_sh *shell, ssize_t move);
 int					sh_command_cat(t_command *this, t_sh *sh, char c);
 void				sh_command_del(t_command *cmd, t_sh *sh, bool current);
 ssize_t				sh_getchar(t_reader *this, const int fd, char *c);
-t_lexer_return		sh_lexer(t_command *cmd);
+t_lexer				sh_lexer(t_command *cmd);
 int					sh_exec(t_command *cmd, t_sh *sh);
 
 t_string			new_string(char *c, bool char_mode);
 bool				concat_strings(t_string *this, char *str, size_t len);
 bool				extend_string(t_string *this, size_t size);
+
+char				*sh_get_env(char *env_var, size_t len);
 
 #endif
