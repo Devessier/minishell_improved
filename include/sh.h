@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 20:29:24 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/17 16:34:44 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/18 11:52:19 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,14 +34,14 @@ typedef struct		s_tring
 
 typedef enum		e_token_char
 {
-	T_DQUOTE = 1,
-	T_SQUOTE = 2,
+	T_WORD,
+	T_DQUOTE,
+	T_SQUOTE,
 	T_WHITESPACE,
 	T_SEMICOLON,
 	T_ESCAPE,
 	T_AMPERSAND,
 	T_PIPE,
-	T_WORD = 0,
 }					t_oken_char;
 
 typedef struct		s_token
@@ -54,7 +54,8 @@ typedef enum		e_lexer_state
 {
 	IN_DQUOTE = 1,
 	IN_SQUOTE = 2,
-	GLOBAL_SCOPE
+	GLOBAL_SCOPE,
+	EXPLICIT_SYNTAX_ERROR,
 }					t_lexer_state;
 
 typedef struct		s_lexer

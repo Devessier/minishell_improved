@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/15 09:30:25 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/17 18:08:33 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/18 11:53:19 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,19 +88,21 @@ bool						append_token(t_lexer *this, size_t index, t_oken token)
 	size_t	cap;
 	size_t	i;
 
-	cap = this->cap == 0 ? 2 : this->cap;
+	cap = this->cap == 0 ? 1 : this->cap;
 	if (index + 1 > this->cap)
 	{
 		cap <<= 1;
 		tmp = this->tokens;
 		if (!(this->tokens = malloc(sizeof(t_oken) * cap)))
 			return (false);
+		this->cap = cap;
 		i = 0;
 		while (i++ < this->len)
 			this->tokens[i - 1] = tmp[i - 1];
 		free(tmp);
 	}
-	this->tokens[this->len++] = token;
+	this->len++;
+	this->tokens[index] = token;
 	return (true);
 }
 
@@ -115,7 +117,7 @@ bool						lexer_algorithm(t_lexer *lexer, uint8_t *str)
 	init_lexer(lexer);
 	init_token(&tok);
 	i = 0;
-	while (*str != '\0')
+	while (str && *str != '\0')
 	{
 		*types = g_tokens[*str];
 		if (*str == '#')
@@ -130,14 +132,13 @@ bool						lexer_algorithm(t_lexer *lexer, uint8_t *str)
 		}
 		else if (lexer->state == GLOBAL_SCOPE)
 		{
-			if (types[1] == *types && (*types == T_AMPERSAND || *types == T_PIPE))
+			if (*types == T_AMPERSAND || *types == T_PIPE)
+				return (lexer->state = EXPLICIT_SYNTAX_ERROR, true);
+			else if (*types == T_DQUOTE || *types == T_SQUOTE)
 			{
-				ft_putf("ampersand\n");
-				if (!concat_strings(&tok.payload, (char *)str, 1))
-					return (false);
-			}
-			if (*types == T_DQUOTE || *types == T_SQUOTE)
+				tok.type = *types;
 				lexer->state = *types == T_DQUOTE ? IN_DQUOTE : IN_SQUOTE;
+			}
 			else if (*types == T_ESCAPE && str[1] != '\0' && !concat_strings(&tok.payload, (char *)++str, 1))
 				return (false);
 			else if (*types == T_WHITESPACE)
@@ -145,10 +146,15 @@ bool						lexer_algorithm(t_lexer *lexer, uint8_t *str)
 				if (!append_token(lexer, i++, tok))
 					return (false);
 				// Don't forget to free the previous string
+				ft_bzero(types, 2 * sizeof(t_oken_char));
 				init_token(&tok);
 			}
-			else if (!concat_strings(&tok.payload, (char *)str, 1))
-				return (false);
+			else
+			{
+				tok.type = T_WORD;
+				if (!concat_strings(&tok.payload, (char *)str, 1))
+					return (false);
+			}
 		}
 		else
 		{
@@ -166,7 +172,10 @@ bool						lexer_algorithm(t_lexer *lexer, uint8_t *str)
 		str++;
 	}
 	if (tok.payload.len > 0)
+	{
+		tok.type = *types;
 		append_token(lexer, i, tok);
+	}
 	return (true);
 }
 
