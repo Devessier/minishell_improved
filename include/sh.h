@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 20:29:24 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/18 11:52:19 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/18 15:21:04 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 # include <sys/types.h>
 # include <stdint.h>
 # include <stdbool.h>
+# include <sys/ioctl.h>
 # define SHELL_NAME_LEN 1 << 8
 # define BUFF_SIZE 4096
 # define CSI "\x1b["
@@ -82,6 +83,7 @@ typedef enum		e_color
 typedef struct		s_sh
 {
 	struct s_cursor	cursor;
+	struct winsize	ws;
 	char			name[SHELL_NAME_LEN];
 	size_t			name_len;
 	t_color			primary_color;
