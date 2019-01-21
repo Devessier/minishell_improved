@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 17:09:14 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/18 15:50:31 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/21 15:58:10 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,20 +42,21 @@ void	sh_setup_raw_mode(void)
 
 void	move_cursor(t_command *cmd, t_sh *sh, ssize_t move)
 {
-	const unsigned short	x_move = (sh->cursor.x + move) % sh->ws.ws_col;
-	const unsigned short	y_move = (sh->cursor.y + move) / sh->ws.ws_col;
-	const int				cases_before_cursor = sh->ws.ws_col * sh->cursor.y + sh->cursor.x - sh->name_len - 4;
-	const int				induced_cases_by_move = y_move * sh->ws.ws_col + x_move - sh->name_len - 4;
+	const ssize_t			current_len = sh->cursor.y * sh->ws.ws_col + sh->cursor.x;
+	const ssize_t			index = current_len + move;
+	const unsigned short	x_move = index % sh->ws.ws_col;
+	const unsigned short	y_move = index / sh->ws.ws_col;
 
 	if (move == -10000)
-		move_cursor(cmd, sh, cases_before_cursor);
+		move_cursor(cmd, sh, -current_len);
 	else if (move == 10000)
-		move_cursor(cmd, sh, cmd->string.len - cases_before_cursor - 1);
-	else if ((move < 0 && cases_before_cursor + induced_cases_by_move > 0)
-			|| (move > 0 && cmd->string.len - cases_before_cursor - induced_cases_by_move > 0))
+		move_cursor(cmd, sh, cmd->string.len - current_len);
+	else if ((move < 0 && index >= (ssize_t)sh->name_len + 4)
+			|| (move > 0 && index <= (ssize_t)cmd->string.len + (ssize_t)sh->name_len + 4))
 	{
-		sh->cursor.x += x_move;
-		sh->cursor.y += y_move;
+		sh->cursor.x = x_move;
+		sh->cursor.y = y_move;
+		sh->cursor.index = index - sh->name_len - 4;
 	}
 }
 
@@ -85,7 +86,7 @@ void	sh_cli_handlers(t_sh *shell, t_reader *reader, t_command *cmd, char c, char
 	else if (ft_isprint(c) && ((c == ' ' && prev != ' ') || c != ' '))
 	{
 		sh_command_cat(cmd, shell, c);
-		move_cursor(cmd, shell, -1);
+		move_cursor(cmd, shell, 1);
 	}
 	else if (c == 0x4)
 		ft_putchar(0x7);
@@ -102,7 +103,7 @@ void	update_window_size(int sig)
 void	sh_init(t_sh *sh, const char *name)
 {
 	*sh = (t_sh) {
-		.cursor = { 0, 0 },
+		.cursor = { 0, 0, 0 },
 		.primary_color = BLUE,
 	};
 	ioctl(STDIN_FILENO, TIOCGWINSZ, &g_shell.ws);
@@ -123,17 +124,17 @@ int		main(int argc, char **argv, char **envp)
 	sh_init(&g_shell, "Minishell Improved");
 	while (42)
 	{
-		g_shell.cursor = (struct s_cursor) { 0, 0 };
+		g_shell.cursor = (struct s_cursor) { .x = g_shell.name_len + 4, 0, 0 };
 		reader_init(&reader);
 		command_init(&cmd);
-		ft_putf(CSI "G" CSI "J" PROMPT_FG_COLOUR "%s" COLOUR_RESET " > ", g_shell.name);
+		ft_putf(CSI "G" CSI "J" PROMPT_FG_COLOUR "%s" COLOUR_RESET " > " CSI "s", g_shell.name);
 		while (42)
 		{
 			if (cmd.string.str != NULL)
 			{
-				if (g_shell.cursor.y > 0)
-					ft_putf(CSI "%dF", g_shell.cursor.y);
-				ft_putf(CSI "%dG" CSI "J" "%s" CSI "%dG", g_shell.name_len + 4, cmd.string.str, g_shell.name_len + 4 + g_shell.cursor.x);
+				ft_putf(CSI "u" CSI "J" "%s" CSI "%dG", cmd.string.str, g_shell.cursor.x);
+				ft_putf("\ncursor y = %d\n", g_shell.cursor.y);
+				ft_putf(CSI "%dE", g_shell.cursor.y);
 			}
 			if (sh_getchar(&reader, STDIN_FILENO, c + 1) > 0)
 			{

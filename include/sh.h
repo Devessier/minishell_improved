@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 20:29:24 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/18 15:21:04 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/21 14:28:03 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,7 @@ struct				s_cursor
 {
 	uint8_t			x;
 	uint8_t			y;
+	size_t			index;
 };
 
 typedef enum		e_color

@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 20:41:45 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/16 13:18:07 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/21 14:31:34 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,24 +41,24 @@ int		sh_command_cat(t_command *this, t_sh *sh, char c)
 {
 	if (!extend_string(&this->string, 1))
 		return (-1);
-	if (sh->cursor.x == this->string.len)
+	if (sh->cursor.index == this->string.len)
 		this->string.str[this->string.len++] = c;
 	else
 	{
-		ft_memmove(this->string.str + sh->cursor.x + 1,
-			this->string.str + sh->cursor.x, this->string.len - sh->cursor.x);
-		this->string.str[sh->cursor.x] = c;
+		ft_memmove(this->string.str + sh->cursor.index + 1,
+			this->string.str + sh->cursor.index, this->string.len - sh->cursor.index);
+		this->string.str[sh->cursor.index] = c;
 		this->string.len++;
 	}
-	return (sh->cursor.x++ & 0);
+	return (0);
 }
 
 void	sh_command_del(t_command *this, t_sh *sh, bool current)
 {
-	if (this->string.len <= 0 || (current && sh->cursor.x <= 0))
+	if (this->string.len <= 0 || (current && sh->cursor.index <= 0))
 		return ft_putchar(0x7);
-	ft_strcpy(this->string.str + sh->cursor.x + (current ? -1 : 0),
-		this->string.str + sh->cursor.x + (current ? 0 : 1));
+	ft_strcpy(this->string.str + sh->cursor.index + (current ? -1 : 0),
+		this->string.str + sh->cursor.index + (current ? 0 : 1));
 	this->string.len--;
 	if (current)
 		move_cursor(this, sh, -1);
