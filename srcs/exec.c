@@ -14,7 +14,7 @@
 #include "libft.h"
 #include <stdio.h>
 
-void	print_lexer(t_lexer lexer)
+/*void	print_lexer(t_lexer lexer)
 {
 	size_t	i;
 
@@ -35,4 +35,4 @@ int		sh_exec(t_command *cmd, t_sh *sh)
 	if (lexer.state != GLOBAL_SCOPE)
 		ft_putf("syntax error\n");
 	return (0);
-}
+}*/

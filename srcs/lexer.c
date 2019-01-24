@@ -16,7 +16,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
-static const t_oken_char	g_tokens[1 << 7] = {
+/*static const t_oken_char	g_tokens[1 << 7] = {
 	['\"'] = T_DQUOTE,
 	['\''] = T_SQUOTE,
 	[' '] = T_WHITESPACE,
@@ -24,9 +24,9 @@ static const t_oken_char	g_tokens[1 << 7] = {
 	['\\'] = T_ESCAPE,
 	['&'] = T_AMPERSAND,
 	['|'] = T_PIPE,
-};
+};*/
 
-void						init_token(t_oken *tok)
+/*void						init_token(t_oken *tok)
 {
 	*tok = (t_oken) {
 		.payload = { 0, 0, NULL },
@@ -185,4 +185,4 @@ t_lexer						sh_lexer(t_command *cmd)
 
 	lexer_algorithm(&lexer, (uint8_t *)cmd->string.str);
 	return (lexer);
-}
+}*/

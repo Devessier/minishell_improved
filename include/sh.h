@@ -16,6 +16,7 @@
 # include <stdint.h>
 # include <stdbool.h>
 # include <sys/ioctl.h>
+# include "libft.h"
 # define SHELL_NAME_LEN 1 << 8
 # define BUFF_SIZE 4096
 # define CSI "\x1b["
@@ -25,13 +26,6 @@
 # define RIGHT_CURSOR CSI "D"
 # define PROMPT_FG_COLOUR CSI "38;5;45m"
 # define COLOUR_RESET CSI "0m"
-
-typedef struct		s_tring
-{
-	size_t	len;
-	size_t	cap;
-	char	*str;
-}					t_string;
 
 typedef enum		e_token_char
 {

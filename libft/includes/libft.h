@@ -17,6 +17,7 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include <stdarg.h>
+# include <stdbool.h>
 
 typedef struct	s_list
 {
@@ -24,6 +25,13 @@ typedef struct	s_list
 	size_t			content_size;
 	struct s_list	*next;
 }				t_list;
+
+typedef struct  s_tring
+{
+    size_t  len;
+    size_t  cap;
+    char    *buff;
+}               t_string;
 
 /*
 ** Function of stdlib.h
@@ -125,5 +133,15 @@ void			ft_putf_fd(int fd, const char *format, ...);
 void			ft_lstadd_back(t_list **alst, t_list *new);
 t_list			*ft_lstat(t_list *lst, unsigned int pos);
 size_t			ft_lstsize(t_list *lst);
+
+/*
+** Functions for t_string manipulation
+*/
+
+t_string        ft_new_string(char *c, bool char_mode);
+bool            ft_concat_strings(t_string *this, char *string, size_t len);
+bool            ft_extend_string(t_string *this, size_t size);
+bool            ft_free_string(t_string *this);
+void            ft_putnstring(t_string *this, size_t start, size_t n);
 
 #endif

@@ -12,7 +12,7 @@
 
 NAME = libft.a
 
-CFLAGS = -Wall -Wextra -Werror -I includes/ -g
+CFLAGS = -Wall -Wextra -Werror -I includes/
 
 RM = rm -f
 
@@ -83,6 +83,7 @@ SRCS += ft_strsub.c
 SRCS += ft_strtrim.c
 SRCS += ft_tolower.c
 SRCS += ft_toupper.c
+SRCS += strings.c
 
 OBJS = $(SRCS:.c=.o)
 

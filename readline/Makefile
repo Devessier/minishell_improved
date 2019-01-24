@@ -5,34 +5,40 @@
 #                                                     +:+ +:+         +:+      #
 #    By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2018/11/06 16:01:17 by bdevessi          #+#    #+#              #
-#    Updated: 2019/01/24 23:26:34 by bdevessi         ###   ########.fr        #
+#    Created: 2019/01/24 11:27:35 by bdevessi          #+#    #+#              #
+#    Updated: 2019/01/24 23:25:26 by bdevessi         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME = minishell
-CFLAGS = -Wall -Wextra -Werror -Iinclude -Ilibft/includes -Ireadline/include
-CC = gcc
+NAME = readline.a
 
-include src.mk
+CFLAGS = -Wall -Wextra -Werror -Iinclude -I../libft/includes
+
+RM = rm -f
+
+AR = ar rcs
+
+SRCS += src/readline.c
+SRCS += src/setup.c
+SRCS += src/utils.c
+SRCS += src/display.c
+SRCS += src/reader.c
 
 OBJS = $(SRCS:.c=.o)
 
 all: $(NAME)
 
-$(OBJS): Makefile include/sh.h libft/libft.a readline/readline.a
-
 $(NAME): $(OBJS)
-	$(MAKE) -C readline readline.a
-	$(MAKE) -C libft libft.a
-	$(CC) -o $(NAME) $(OBJS) libft/libft.a readline/readline.a
+	$(AR) $(NAME) $(OBJS)
+
+$(OBJS): Makefile include/readline.h include/internal.h
 
 clean:
-	rm -f $(OBJS)
+	$(RM) $(OBJS)
 
 fclean: clean
-	rm -rf $(NAME)
+	$(RM) $(NAME)
 
-re: fclean $(NAME)
+re: fclean all
 
-.PHONY: clean fclean re proto
+.PHONY: all clean fclean re
