@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/07 10:27:14 by bdevessi          #+#    #+#             */
-/*   Updated: 2018/11/16 11:13:37 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/25 13:55:43 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,6 +98,7 @@ char			*ft_strjoin(char const *s1, char const *s2);
 char			*ft_strtrim(char const *s);
 char			**ft_strsplit(char const *s, char c);
 char			*ft_itoa(int n);
+int				ft_abs(int n);
 
 /*
 ** Write functions

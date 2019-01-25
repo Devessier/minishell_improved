@@ -31,7 +31,7 @@ int		main(int argc, char **argv, char **envp)
 {
 	(void)argc, (void)argv, (void)envp;
 
-    ft_rl_init();
+	ft_rl_init();
 	while (42)
 	{
         t_string string = ft_readline("Minishell Improved", PROMPT_FG_COLOUR);

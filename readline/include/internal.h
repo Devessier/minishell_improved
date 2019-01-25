@@ -25,6 +25,12 @@ typedef enum                    e_cursor_move_type
     JUMP_TO_N_CHAR,
 }                               t_cursor_move_type;
 
+typedef enum                    e_terminal_size_operation
+{
+    GET,
+    SET,
+}                               t_terminal_size_operation;
+
 typedef enum                    e_delete_type
 {
     DELETE_CURR_CHAR,
@@ -42,7 +48,7 @@ void                            ft_rl_move_cursor(t_readline *rl, t_string *stri
 bool                            ft_rl_handle_character(t_readline *rl, t_ft_rl_reader *reader, t_string *string, char characters[2]);
 bool                            ft_rl_run_func(char *key, char curr, char prev);
 bool                            ft_rl_exit(char curr, char prev);
-struct winsize                  *ft_rl_terminal_size(bool set);
+struct winsize                  *ft_rl_terminal_size(t_terminal_size_operation operation);
 void                            ft_rl_internal_checks(void);
 
 #endif

@@ -18,6 +18,7 @@
 #include "libft.h"
 #include <stdlib.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 t_ft_rl_functions   g_ft_rl_functions = {
     1,

@@ -26,11 +26,11 @@ static void                 handle_sigwinch(int sig)
     got_sigwinch = true;
 }
 
-struct winsize              *ft_rl_terminal_size(bool set)
+struct winsize              *ft_rl_terminal_size(t_terminal_size_operation operation)
 {
     static struct winsize   ws;
 
-    if (!set)
+    if (operation == GET)
         return (&ws);
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws);
     return (&ws);
@@ -39,7 +39,7 @@ struct winsize              *ft_rl_terminal_size(bool set)
 void                        ft_rl_init(void)
 {
     signal(SIGWINCH, handle_sigwinch);
-    ft_rl_terminal_size(true);
+    ft_rl_terminal_size(SET);
     ft_rl_config_termios(true);
 }
 
@@ -47,7 +47,7 @@ void                        ft_rl_internal_checks(void)
 {
     if (got_sigwinch)
     {
-        ft_rl_terminal_size(true);
+        ft_rl_terminal_size(SET);
         got_sigwinch = false;
     }
 }

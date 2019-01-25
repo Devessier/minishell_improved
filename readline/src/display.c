@@ -71,36 +71,45 @@ void    ft_rl_move_cursor(t_readline *rl, t_string *string, t_cursor_move_type t
     }
 }
 
+void    calculate_interval(t_readline *rl, unsigned short interval[3], unsigned short last, const unsigned short move_of)
+{
+    const unsigned short    backward_count = (*interval - rl->cursor) / move_of + 1;
+    const unsigned short    forward_count = (rl->cursor - 1[interval]) / move_of + 1;
+
+    if (rl->cursor < last && *interval > 0 && rl->cursor <= *interval)
+    {
+        *interval -= move_of * backward_count;
+        interval[1] -= move_of * backward_count;
+    }
+    else if (rl->cursor > last && rl->cursor >= interval[1])
+    {
+        *interval += move_of * forward_count - (forward_count != 0);
+        interval[1] += move_of * forward_count - (forward_count != 0);
+    }
+}
+
 void    ft_rl_display(t_readline *rl, t_string *line)
 {
-    const unsigned short    terminal_width = ft_rl_terminal_size(false)->ws_col;
+    const unsigned short    terminal_width = ft_rl_terminal_size(GET)->ws_col;
     const unsigned short    prompt_end = rl->prompt_len % terminal_width;
     const unsigned short    usable_width = terminal_width - prompt_end;
-    static unsigned short   interval[3] = { 0 };
-    const unsigned short    fifth_usable_width = usable_width / 5;
+    //const unsigned short    fifth = usable_width / 5;
+    const unsigned short    cursor_by_width = rl->cursor / usable_width;
+    const unsigned short    interval[2] = { cursor_by_width * usable_width, (cursor_by_width + 1) * usable_width };
 
     ft_putf(CSI "%dG" CSI "J", prompt_end + 1);
-    if (interval[1] == 0)
-        interval[1] = usable_width;
     if (usable_width < 2)
         return ;
     if (usable_width == 2 && line->len > 2)
         return ft_putstr("\xF0\x9F\x98\xA5");
-    if (rl->cursor < interval[2] && *interval > 0 && rl->cursor == *interval)
-    {
-        *interval -= fifth_usable_width;
-        interval[1] -= fifth_usable_width;
-    }
-    else if (rl->cursor > interval[2] && interval[1] <= line->len && rl->cursor == interval[1])
-    {
-        *interval += fifth_usable_width;
-        interval[1] += fifth_usable_width;
-    }
-    interval[2] = rl->cursor;
-    if (line->len > usable_width && rl->cursor > 0)
+    if (*interval > 0)
         ft_putstr("…");
-    ft_putnstring(line, *interval, interval[1] - *interval);
-    if (line->len > usable_width && rl->cursor < line->len)
+    ft_putf("len of interval = %d\n", interval[1] - *interval);
+    ft_putnstring(line, *interval - (*interval > 0), interval[1] - *interval - (*interval > 0));
+    if (1[interval] < line->len)
         ft_putstr("…");
-    ft_putf(CSI "%dG", prompt_end + 1 + rl->cursor % usable_width + (rl->cursor / usable_width > 0 ? interval[1] - *interval : 0));
+    if (rl->cursor == *interval)
+        ft_putf(CSI "%dG", prompt_end + 1);
+    else
+        ft_putf(CSI "%dG", prompt_end + 1 + (*interval > 0 ? rl->cursor - *interval + 1 : rl->cursor));
 }
