@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/24 11:20:54 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/24 11:20:55 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/28 11:26:05 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,13 @@ bool            ft_free_string(t_string *this)
     this->cap = 0;
     return (true);
 }
+
+ssize_t			ft_min(ssize_t a, ssize_t b)
+{
+	return ((a < b) ? a : b);
+}
+
 void            ft_putnstring(t_string *this, size_t start, size_t n)
 {
-    write(1, this->buff + start, this->len - start - (this->len - start < n ? 0 : n));
+    write(1, this->buff + start, ft_min(this->len, n));
 }

@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/24 13:26:29 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/24 13:26:46 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/28 11:30:06 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ uint8_t                         get_utf8_sequence_len(uint8_t c);
 
 int                             ft_rl_getchar(t_ft_rl_reader *this, const int fd, char *c);
 int                             ft_rl_getchar_blocking(t_ft_rl_reader *this, const int fd, char *c);
-void                            ft_rl_display(t_readline *rl, t_string *line);
+void                            ft_rl_display(t_readline *rl, t_string *line, bool reset);
 bool                            ft_rl_concat_strings_cursor(t_string *string, t_readline *rl, char c);
 void                            ft_rl_delete_char(t_readline *rl, t_string *string, t_delete_type type);
 void                            ft_rl_move_cursor(t_readline *rl, t_string *string, t_cursor_move_type type, ssize_t move_of);
