@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/24 13:26:29 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/28 11:30:06 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/29 16:31:05 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,22 +19,22 @@
 
 typedef enum                    e_cursor_move_type
 {
-    GOTO_BEGINNING,
-    GOTO_END,
-    JUMP_TO_N_WORD,
-    JUMP_TO_N_CHAR,
+	GOTO_BEGINNING,
+	GOTO_END,
+	JUMP_TO_N_WORD,
+	JUMP_TO_N_CHAR,
 }                               t_cursor_move_type;
 
 typedef enum                    e_terminal_size_operation
 {
-    GET,
-    SET,
+	GET,
+	SET,
 }                               t_terminal_size_operation;
 
 typedef enum                    e_delete_type
 {
-    DELETE_CURR_CHAR,
-    DELETE_PREV_CHAR,
+	DELETE_CURR_CHAR,
+	DELETE_PREV_CHAR,
 }                               t_delete_type;
 
 uint8_t                         get_utf8_sequence_len(uint8_t c);
@@ -49,6 +49,6 @@ bool                            ft_rl_handle_character(t_readline *rl, t_ft_rl_r
 bool                            ft_rl_run_func(char *key, char curr, char prev);
 bool                            ft_rl_exit(char curr, char prev);
 struct winsize                  *ft_rl_terminal_size(t_terminal_size_operation operation);
-void                            ft_rl_internal_checks(void);
+bool                            ft_rl_internal_checks(void);
 
 #endif

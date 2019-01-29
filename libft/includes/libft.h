@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/07 10:27:14 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/25 13:55:43 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/29 15:30:35 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,5 +144,6 @@ bool            ft_concat_strings(t_string *this, char *string, size_t len);
 bool            ft_extend_string(t_string *this, size_t size);
 bool            ft_free_string(t_string *this);
 void            ft_putnstring(t_string *this, size_t start, size_t n);
+ssize_t			ft_min(ssize_t a, ssize_t b);
 
 #endif

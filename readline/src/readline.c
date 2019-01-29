@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/24 10:46:02 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/29 13:13:41 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/29 17:18:38 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,15 +61,13 @@ t_string    ft_readline(char *prompt, t_ft_rl_prompt_colour colour)
 	reset = true;
     init_ft_rl_reader_string(&reader, &string);
     ft_bzero(characters, sizeof(characters));
-    ft_putf("%s%s $ " COLOUR_RESET, rl.colour, rl.prompt);
+	ft_putf("%s%s $ " COLOUR_RESET, rl.colour, rl.prompt);
     while (42)
     {
-        ft_rl_internal_checks();
+        if (ft_rl_internal_checks())
+			reset = true;
         if (string.buff != NULL)
-		{
             ft_rl_display((t_readline *)&rl, &string, reset);
-			reset = false;
-		}
         if (ft_rl_getchar(&reader, 0, characters + 1) > 0)
         {
             ft_rl_handle_character((t_readline *)&rl, &reader, &string, characters);
@@ -80,6 +78,7 @@ t_string    ft_readline(char *prompt, t_ft_rl_prompt_colour colour)
                 break ;
             }
         }
+		reset = false;
     }
     ft_putchar('\n');
     return (string);

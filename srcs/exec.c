@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/15 09:34:03 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/17 12:00:52 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/29 17:37:41 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include "libft.h"
 #include <stdio.h>
 
-/*void	print_lexer(t_lexer lexer)
+void	print_lexer(t_lexer lexer)
 {
 	size_t	i;
 
@@ -23,16 +23,16 @@
 	while (i < lexer.len)
 	{
 		t_oken tok = lexer.tokens[i++];
-		printf("{\n\ttype = %u\n\tstring = {\n\t\tlen = %zu\n\t\tstr = \"%s\"\n\t}\n}\n", tok.type, tok.payload.len, tok.payload.str);
+		printf("{\n\ttype = %u\n\tstring = {\n\t\tlen = %zu\n\t\tstr = \"%s\"\n\t}\n}\n", tok.type, tok.payload.len, tok.payload.buff);
 	}
 }
 
-int		sh_exec(t_command *cmd, t_sh *sh)
+int		sh_exec(t_string *string)
 {
-	(void)sh;
-	const t_lexer	lexer = sh_lexer(cmd);
+	const t_lexer	lexer = sh_lexer(string);
+
 	print_lexer(lexer);
 	if (lexer.state != GLOBAL_SCOPE)
 		ft_putf("syntax error\n");
 	return (0);
-}*/
+}

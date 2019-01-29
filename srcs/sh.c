@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 17:09:14 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/29 10:31:53 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/29 17:37:21 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,24 +19,17 @@
 #include <sys/ioctl.h>
 #include "readline.h"
 
-/*void	update_window_size(int sig)
-{
-	if (sig != SIGWINCH)
-		return ;
-	ft_putf("update\n");
-	ioctl(STDIN_FILENO, TIOCGWINSZ, &g_shell.ws);
-}*/
-
 int		main(int argc, char **argv, char **envp)
 {
 	(void)argc, (void)argv, (void)envp;
 
-	ft_rl_init();
 	while (42)
 	{
-        t_string string = ft_readline("Minishell Improved", RL_ORANGE);
-        if (string.buff != NULL)
-            ft_putf("string = %s\n", string.buff);
+		ft_rl_init();
+		t_string string = ft_readline("Minishell Improved", RL_ORANGE);
+		if (string.buff != NULL)
+			sh_exec(&string);
+		ft_rl_config_termios(false);
 	}
-    ft_rl_config_termios(false);
+	ft_rl_config_termios(false);
 }

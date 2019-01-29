@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/15 09:30:25 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/18 11:53:19 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/29 17:35:16 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
-/*static const t_oken_char	g_tokens[1 << 7] = {
+static const t_oken_char	g_tokens[1 << 7] = {
 	['\"'] = T_DQUOTE,
 	['\''] = T_SQUOTE,
 	[' '] = T_WHITESPACE,
@@ -24,9 +24,9 @@
 	['\\'] = T_ESCAPE,
 	['&'] = T_AMPERSAND,
 	['|'] = T_PIPE,
-};*/
+};
 
-/*void						init_token(t_oken *tok)
+void						init_token(t_oken *tok)
 {
 	*tok = (t_oken) {
 		.payload = { 0, 0, NULL },
@@ -65,7 +65,7 @@ size_t						append_token_env_var(t_oken *tok, char *str)
 	if (*str == '$')
 	{
 		env_value = ft_itoa(getpid());
-		concat_strings(&tok->payload, env_value, ft_strlen(env_value));
+		ft_concat_strings(&tok->payload, env_value, ft_strlen(env_value));
 		free(env_value);
 		return (1);
 	}
@@ -77,7 +77,7 @@ size_t						append_token_env_var(t_oken *tok, char *str)
 	if (i > 0)
 	{
 		env_value = sh_get_env(str, i);
-		concat_strings(&tok->payload, env_value, ft_strlen(env_value));
+		ft_concat_strings(&tok->payload, env_value, ft_strlen(env_value));
 	}
 	return (i);
 }
@@ -127,7 +127,7 @@ bool						lexer_algorithm(t_lexer *lexer, uint8_t *str)
 			tmp = append_token_env_var(&tok, (char *)str);
 			if (tmp > 0)
 				str += tmp;
-			else if (!concat_strings(&tok.payload, "$", 1))
+			else if (!ft_concat_strings(&tok.payload, "$", 1))
 				return (false);
 		}
 		else if (lexer->state == GLOBAL_SCOPE)
@@ -139,7 +139,7 @@ bool						lexer_algorithm(t_lexer *lexer, uint8_t *str)
 				tok.type = *types;
 				lexer->state = *types == T_DQUOTE ? IN_DQUOTE : IN_SQUOTE;
 			}
-			else if (*types == T_ESCAPE && str[1] != '\0' && !concat_strings(&tok.payload, (char *)++str, 1))
+			else if (*types == T_ESCAPE && str[1] != '\0' && !ft_concat_strings(&tok.payload, (char *)++str, 1))
 				return (false);
 			else if (*types == T_WHITESPACE)
 			{
@@ -152,7 +152,7 @@ bool						lexer_algorithm(t_lexer *lexer, uint8_t *str)
 			else
 			{
 				tok.type = T_WORD;
-				if (!concat_strings(&tok.payload, (char *)str, 1))
+				if (!ft_concat_strings(&tok.payload, (char *)str, 1))
 					return (false);
 			}
 		}
@@ -162,10 +162,10 @@ bool						lexer_algorithm(t_lexer *lexer, uint8_t *str)
 				lexer->state = GLOBAL_SCOPE;
 			else if (*types == T_ESCAPE && lexer->state == IN_DQUOTE && str[1] != '\0' && (str[1] == '$' || str[1] == '`' || str[1] == '\"' || str[1] == '\\' || str[1] == '\n'))
 			{
-				if (!(concat_strings(&tok.payload, (char *)++str, 1)))
+				if (!(ft_concat_strings(&tok.payload, (char *)++str, 1)))
 					return (false);
 			}
-			else if (!concat_strings(&tok.payload, (char *)str, 1))
+			else if (!ft_concat_strings(&tok.payload, (char *)str, 1))
 				return (false);
 		}
 		types[1] = *types;
@@ -179,10 +179,10 @@ bool						lexer_algorithm(t_lexer *lexer, uint8_t *str)
 	return (true);
 }
 
-t_lexer						sh_lexer(t_command *cmd)
+t_lexer						sh_lexer(t_string *string)
 {
 	t_lexer			lexer;
 
-	lexer_algorithm(&lexer, (uint8_t *)cmd->string.str);
+	lexer_algorithm(&lexer, (uint8_t *)string->buff);
 	return (lexer);
-}*/
+}
