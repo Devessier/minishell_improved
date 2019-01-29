@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 17:09:14 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/21 15:58:10 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/29 10:31:53 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ int		main(int argc, char **argv, char **envp)
 	ft_rl_init();
 	while (42)
 	{
-        t_string string = ft_readline("Minishell Improved", PROMPT_FG_COLOUR);
+        t_string string = ft_readline("Minishell Improved", RL_ORANGE);
         if (string.buff != NULL)
             ft_putf("string = %s\n", string.buff);
 	}

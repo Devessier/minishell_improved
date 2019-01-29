@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/24 10:39:07 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/28 11:29:43 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/29 10:30:28 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,13 @@
 # define COLOUR_RESET CSI "0m"
 # define CLEAR_SCREEN CSI "2J" CSI "H"
 # define FT_RL_MAX_FUNC 1 << 6
+
+typedef enum				s_ft_rl_prompt_colour
+{
+	RL_BLUE,
+	RL_ORANGE,
+	RL_RED,
+}							t_ft_rl_prompt_colour;
 
 typedef struct              s_ft_rl_reader
 {
@@ -51,7 +58,7 @@ typedef struct              s_ft_rl_functions
     t_fl_rl_func_entry  functions[FT_RL_MAX_FUNC];
 }                           t_ft_rl_functions;
 
-t_string                    ft_readline(char *prompt, char *colour);
+t_string                    ft_readline(char *prompt, t_ft_rl_prompt_colour colour);
 void                        ft_rl_init(void);
 void                        ft_rl_config_termios(bool init);
 

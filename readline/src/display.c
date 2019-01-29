@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/24 13:24:22 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/28 16:35:18 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/29 13:40:12 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,17 +71,6 @@ void    ft_rl_move_cursor(t_readline *rl, t_string *string, t_cursor_move_type t
 	}
 }
 
-int		virtual_horizontal_scroller(t_readline *rl, ssize_t diff, unsigned short width)
-{
-	const ssize_t	modulo = rl->cursor % width;
-
-	if (modulo + diff >= width)
-		return (width - 1);
-	else if (modulo + diff <= 0)
-		return (0);
-	return (modulo);
-}
-
 void	reset_interval(ssize_t interval[3])
 {
 	*interval = 0;
@@ -91,30 +80,32 @@ void	reset_interval(ssize_t interval[3])
 
 void    ft_rl_display(t_readline *rl, t_string *line, bool reset)
 {
-	const unsigned short    terminal_width = ft_rl_terminal_size(GET)->ws_col;
-	const unsigned short    prompt_end = rl->prompt_len % terminal_width;
-	const unsigned short    usable_width = terminal_width - prompt_end;
+	const unsigned short    prompt_end = rl->prompt_len % ft_rl_terminal_size(GET)->ws_col;
+	const unsigned short    usable_width = ft_rl_terminal_size(GET)->ws_col - prompt_end;
 	ssize_t					diff;
 	static ssize_t			interval[3] = { 0, 0, -1 };
+	const size_t			old_interval[2] = { interval[0], interval[1] };
 
 	if (reset)
 		reset_interval(interval);
 	if (interval[2] == -1)
 		interval[1] = usable_width;
-	diff = rl->cursor - interval[2];
-	*interval += (rl->cursor > usable_width) ? diff : 0;
-	interval[1] += (rl->cursor > usable_width) ? diff : 0;
+	diff = (ssize_t)rl->cursor - interval[2];
+	if (rl->cursor < (size_t)*interval || rl->cursor >= (size_t)interval[1])
+	{
+		*interval += diff;
+		interval[1] += diff;
+	}
 	ft_putf(CSI "%dG" CSI "J", prompt_end + 1);
-	/*if (usable_width < 2)
-		return ;
-	if (usable_width == 2 && line->len > 2)
-		return ft_putstr("\xF0\x9F\x98\xA5");*/
-	if (*interval > usable_width)
+	if (interval[0] > 0)
 		ft_putstr("…");
-	ft_putnstring(line, *interval, interval[1] - *interval - (*interval > usable_width) - (1[interval] > usable_width));
-	if (1[interval] > usable_width)
+	ft_putnstring(line, *interval + (interval[0] > 0), interval[1] - *interval - (interval[0] > 0) - ((size_t)interval[1] <= line->len));
+	if ((size_t)interval[1] < line->len)
 		ft_putstr("…");
-	ft_putf(CSI "%dG", prompt_end + 1 + virtual_horizontal_scroller(rl, diff, usable_width));
+	if (diff < 0 && rl->cursor < old_interval[0])
+		ft_putf(CSI "%dG", prompt_end + 1);
+	else if (rl->cursor >= old_interval[0] && rl->cursor <= old_interval[1])
+		ft_putf(CSI "%dG", prompt_end + 1 + (rl->cursor - interval[0]));
 	if ((size_t)interval[2] != rl->cursor)
 		interval[2] = rl->cursor;
 }

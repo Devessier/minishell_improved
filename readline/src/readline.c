@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/24 10:46:02 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/28 11:31:51 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/29 13:13:41 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,9 +41,18 @@ static void init_ft_rl_reader_string(t_ft_rl_reader *reader, t_string *string)
     };
 }
 
-t_string    ft_readline(char *prompt, char *colour)
+char		*ft_rl_prompt_colour(t_ft_rl_prompt_colour colour)
 {
-    const t_readline    rl = { prompt, .prompt_len = ft_strlen(prompt) + 3, colour, .cursor = 0 };
+	if (colour == RL_BLUE)
+		return (CSI "38;5;32m");
+	if (colour == RL_ORANGE)
+		return (CSI "38;5;208m");
+	return (CSI "38;5;196m");
+}
+
+t_string    ft_readline(char *prompt, t_ft_rl_prompt_colour colour)
+{
+    const t_readline    rl = { prompt, ft_strlen(prompt) + 3, ft_rl_prompt_colour(colour), 0 };
     t_ft_rl_reader      reader;
     char                characters[2];
     t_string            string;
@@ -52,7 +61,7 @@ t_string    ft_readline(char *prompt, char *colour)
 	reset = true;
     init_ft_rl_reader_string(&reader, &string);
     ft_bzero(characters, sizeof(characters));
-    ft_putf("%s%s > " COLOUR_RESET, rl.colour, rl.prompt);
+    ft_putf("%s%s $ " COLOUR_RESET, rl.colour, rl.prompt);
     while (42)
     {
         ft_rl_internal_checks();
@@ -107,7 +116,7 @@ bool        ft_rl_handle_character(t_readline *rl, t_ft_rl_reader *reader, t_str
         ft_rl_move_cursor(rl, string, JUMP_TO_N_CHAR, 1);
     }
     else if (characters[1] == 0xC)
-        ft_putf(CLEAR_SCREEN "%s%s > " COLOUR_RESET, rl->colour, rl->prompt);
+        ft_putf(CLEAR_SCREEN "%s%s $ " COLOUR_RESET, rl->colour, rl->prompt);
     else if (characters[1] == 0x4)
         ft_putchar(BELL);
     return (true);

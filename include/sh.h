@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 20:29:24 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/21 14:28:03 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/29 10:22:08 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 # define ERASE_LINE CSI "1K"
 # define LEFT_CURSOR CSI "C"
 # define RIGHT_CURSOR CSI "D"
-# define PROMPT_FG_COLOUR CSI "38;5;45m"
+# define PROMPT_FG_COLOUR CSI "38;5;208m"
 # define COLOUR_RESET CSI "0m"
 
 typedef enum		e_token_char
