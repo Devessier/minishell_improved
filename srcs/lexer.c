@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/15 09:30:25 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/29 17:35:16 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/31 15:56:23 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@ static const t_oken_char	g_tokens[1 << 7] = {
 	['&'] = T_AMPERSAND,
 	['|'] = T_PIPE,
 };
+
+static char					shell_pid[10] = { 0 };
 
 void						init_token(t_oken *tok)
 {
@@ -58,15 +60,15 @@ void						copy_lexer(t_lexer *new, t_lexer *old)
 
 size_t						append_token_env_var(t_oken *tok, char *str)
 {
-	size_t	i;
-	char	*env_value;
+	size_t		i;
+	char		*env_value;
 
 	++str;
 	if (*str == '$')
 	{
-		env_value = ft_itoa(getpid());
-		ft_concat_strings(&tok->payload, env_value, ft_strlen(env_value));
-		free(env_value);
+		if (*shell_pid == '\0')
+			ft_itoa_buff(getpid(), shell_pid);
+		ft_concat_strings(&tok->payload, shell_pid, ft_strlen(shell_pid));
 		return (1);
 	}
 	if (!(*str == '_' || ft_isalpha(*str)))
@@ -132,19 +134,34 @@ bool						lexer_algorithm(t_lexer *lexer, uint8_t *str)
 		}
 		else if (lexer->state == GLOBAL_SCOPE)
 		{
-			if (*types == T_AMPERSAND || *types == T_PIPE)
+			if (*types == T_ESCAPE)
+			{
+				if (*str != '\0' && !ft_concat_strings(&tok.payload, (char *)++str, 1))
+					return (false);
+			}
+			else if (*types == T_AMPERSAND || *types == T_PIPE)
 				return (lexer->state = EXPLICIT_SYNTAX_ERROR, true);
 			else if (*types == T_DQUOTE || *types == T_SQUOTE)
 			{
 				tok.type = *types;
 				lexer->state = *types == T_DQUOTE ? IN_DQUOTE : IN_SQUOTE;
 			}
-			else if (*types == T_ESCAPE && str[1] != '\0' && !ft_concat_strings(&tok.payload, (char *)++str, 1))
-				return (false);
-			else if (*types == T_WHITESPACE)
+			else if (*types == T_WHITESPACE || *types == T_SEMICOLON)
 			{
-				if (!append_token(lexer, i++, tok))
+				if (tok.payload.len > 0 && !append_token(lexer, i++, tok))
 					return (false);
+				if (*types == T_SEMICOLON)
+				{
+					if (str[1] == ';')
+					{
+						// free
+						return (lexer->state = EXPLICIT_SYNTAX_ERROR, false);
+					}
+					init_token(&tok);
+					tok.type = T_SEMICOLON;
+					if (!append_token(lexer, i++, tok))
+						return (false);
+				}
 				// Don't forget to free the previous string
 				ft_bzero(types, 2 * sizeof(t_oken_char));
 				init_token(&tok);

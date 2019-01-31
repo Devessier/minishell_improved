@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 09:57:50 by bdevessi          #+#    #+#             */
-/*   Updated: 2018/11/12 10:38:29 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/31 14:45:36 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,4 +36,28 @@ char	*ft_itoa(int n)
 	}
 	*str = '\0';
 	return (str - (len + (n < 0)));
+}
+
+char	*ft_itoa_buff(int n, char *buffer)
+{
+	long		pow;
+	int			len;
+	char		sign;
+
+	pow = 1;
+	len = 1;
+	sign = n < 0 ? -1 : 1;
+	while (n / (pow *= 10))
+		len++;
+	pow /= 10;
+	if (n < 0)
+		*buffer++ = '-';
+	while (pow)
+	{
+		*buffer++ = (n / pow % 10) * sign + '0';
+		pow /= 10;
+	}
+	*buffer = '\0';
+	return (buffer - (len + (n < 0)));
+
 }

@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 20:29:24 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/29 17:36:44 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/31 17:12:39 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,27 @@ typedef struct		s_lexer
 	t_lexer_state	state;
 	t_oken			*tokens;
 }					t_lexer;
+
+typedef struct		s_ast_node
+{
+	enum			{
+		ROOT,
+		COMMAND,
+		ARG
+	}				tag;
+	union			{
+		struct		{
+			size_t				len;
+			struct s_ast_node	*commands;
+		}			root;
+		struct		{
+			t_string			string;
+			size_t				len;
+			struct s_ast_node	*args;
+		}			command;
+		t_string	argument;
+	}				payload;
+}					t_ast_node;
 
 typedef enum		e_color
 {
