@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/24 10:46:02 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/29 17:18:38 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/01/31 14:10:14 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ t_string    ft_readline(char *prompt, t_ft_rl_prompt_colour colour)
 	reset = true;
     init_ft_rl_reader_string(&reader, &string);
     ft_bzero(characters, sizeof(characters));
-	ft_putf("%s%s $ " COLOUR_RESET, rl.colour, rl.prompt);
+	ft_putf_fd(STDERR_FILENO, "%s%s $ " COLOUR_RESET, rl.colour, rl.prompt);
     while (42)
     {
         if (ft_rl_internal_checks())
@@ -115,7 +115,7 @@ bool        ft_rl_handle_character(t_readline *rl, t_ft_rl_reader *reader, t_str
         ft_rl_move_cursor(rl, string, JUMP_TO_N_CHAR, 1);
     }
     else if (characters[1] == 0xC)
-        ft_putf(CLEAR_SCREEN "%s%s $ " COLOUR_RESET, rl->colour, rl->prompt);
+        ft_putf_fd(STDERR_FILENO, CLEAR_SCREEN "%s%s $ " COLOUR_RESET, rl->colour, rl->prompt);
     else if (characters[1] == 0x4)
         ft_putchar(BELL);
     return (true);
