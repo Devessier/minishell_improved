@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/31 16:54:34 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/01 15:57:42 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/01 18:08:22 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ bool		init_ast_command(t_ast_node *command, t_string *string)
 		},
 	};
 	if (string != NULL)
-		return ((command->payload.command.string = ft_new_string(string->buff, false)).buff == NULL);
+		return ((command->payload.command.string = ft_new_string(string->buff, false)).buff != NULL);
 	return (true);
 }
 
