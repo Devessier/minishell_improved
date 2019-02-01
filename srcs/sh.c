@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 17:09:14 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/29 17:37:21 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/01 17:21:02 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ int		main(int argc, char **argv, char **envp)
 {
 	(void)argc, (void)argv, (void)envp;
 
+	ft_putstr(*envp);
 	while (42)
 	{
 		ft_rl_init();

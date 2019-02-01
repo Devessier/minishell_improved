@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/15 09:30:25 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/31 15:56:23 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/01 16:35:00 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,6 @@ bool						lexer_algorithm(t_lexer *lexer, uint8_t *str)
 	t_oken		tok;
 
 	ft_bzero(types, 2 * sizeof(t_oken_char));
-	init_lexer(lexer);
 	init_token(&tok);
 	i = 0;
 	while (str && *str != '\0')
@@ -139,8 +138,6 @@ bool						lexer_algorithm(t_lexer *lexer, uint8_t *str)
 				if (*str != '\0' && !ft_concat_strings(&tok.payload, (char *)++str, 1))
 					return (false);
 			}
-			else if (*types == T_AMPERSAND || *types == T_PIPE)
-				return (lexer->state = EXPLICIT_SYNTAX_ERROR, true);
 			else if (*types == T_DQUOTE || *types == T_SQUOTE)
 			{
 				tok.type = *types;
@@ -196,10 +193,22 @@ bool						lexer_algorithm(t_lexer *lexer, uint8_t *str)
 	return (true);
 }
 
+bool						destroy_lexer(const t_lexer *lexer)
+{
+	size_t	i;
+
+	i = 0;
+	while (i < lexer->len)
+		free(lexer->tokens[i++].payload.buff);
+	free(lexer->tokens);
+	return (true);
+}
+
 t_lexer						sh_lexer(t_string *string)
 {
 	t_lexer			lexer;
 
+	init_lexer(&lexer);
 	lexer_algorithm(&lexer, (uint8_t *)string->buff);
 	return (lexer);
 }

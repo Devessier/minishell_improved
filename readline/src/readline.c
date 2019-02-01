@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/24 10:46:02 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/31 14:10:14 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/01 13:11:58 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,7 @@ bool        ft_rl_handle_character(t_readline *rl, t_ft_rl_reader *reader, t_str
         ft_rl_delete_char(rl, string, characters[1] == 0x4 ? DELETE_CURR_CHAR : DELETE_PREV_CHAR);
     else if (characters[1] == 0x5 || characters[1] == 0x1)
         ft_rl_move_cursor(rl, string, characters[1] == 0x1 ? GOTO_BEGINNING : GOTO_END, 0);
-    else if (ft_isprint(characters[1]) && (characters[1] != ' ' || string->buff[rl->cursor - 1] != ' '))
+    else if (ft_isprint(characters[1]) && (characters[1] != ' ' || (rl->cursor > 0 && string->buff[rl->cursor - 1] != ' ')))
     {
         if (!ft_rl_concat_strings_cursor(string, rl, characters[1]))
             return (false);

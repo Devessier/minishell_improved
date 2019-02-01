@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/24 11:20:54 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/28 11:26:05 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/01 15:55:45 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 
 t_string        ft_new_string(char *c, bool char_mode)
 {
-    t_string	string;
+	t_string	string;
 
 	string = (t_string) { 0, 0, NULL };
 	if (*c == '\0')
@@ -35,14 +35,14 @@ t_string        ft_new_string(char *c, bool char_mode)
 
 bool            ft_concat_strings(t_string *this, char *string, size_t len)
 {
-    size_t			cap;
+	size_t			cap;
 	char			*tmp;
 
-	cap = this->cap;
+	cap = this->cap == 0 ? len : this->cap;
 	if (this->len + len > this->cap)
 	{
-		if (len > cap * 2)
-			cap += len * 2;
+		if (this->len + len > cap * 2)
+			cap += (this->len + len) * 2;
 		else
 			cap *= 2;
 		if (!(tmp = ft_strnew(cap)))
@@ -63,7 +63,7 @@ bool            ft_concat_strings(t_string *this, char *string, size_t len)
 
 bool            ft_extend_string(t_string *this, size_t size)
 {
-    char	*tmp;
+	char	*tmp;
 	size_t	cap;
 
 	cap = this->cap;
@@ -83,11 +83,11 @@ bool            ft_extend_string(t_string *this, size_t size)
 
 bool            ft_free_string(t_string *this)
 {
-    free(this->buff);
-    this->buff = NULL;
-    this->len = 0;
-    this->cap = 0;
-    return (true);
+	free(this->buff);
+	this->buff = NULL;
+	this->len = 0;
+	this->cap = 0;
+	return (true);
 }
 
 ssize_t			ft_min(ssize_t a, ssize_t b)
@@ -97,5 +97,5 @@ ssize_t			ft_min(ssize_t a, ssize_t b)
 
 void            ft_putnstring(t_string *this, size_t start, size_t n)
 {
-    write(1, this->buff + start, ft_min(this->len, n));
+	write(1, this->buff + start, ft_min(this->len, n));
 }
