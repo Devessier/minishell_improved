@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/07 10:27:14 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/31 14:36:56 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/03 15:33:07 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,5 +146,11 @@ bool            ft_extend_string(t_string *this, size_t size);
 bool            ft_free_string(t_string *this);
 void            ft_putnstring(t_string *this, size_t start, size_t n);
 ssize_t			ft_min(ssize_t a, ssize_t b);
+
+/*
+** Bits manipulations functions
+*/
+
+uint32_t		ft_round_up_2n_pow(uint32_t n);
 
 #endif

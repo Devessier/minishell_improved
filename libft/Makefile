@@ -6,7 +6,7 @@
 #    By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/11/08 09:13:12 by bdevessi          #+#    #+#              #
-#    Updated: 2019/01/31 11:56:03 by bdevessi         ###   ########.fr        #
+#    Updated: 2019/02/03 15:59:03 by bdevessi         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -84,6 +84,7 @@ SRCS += ft_strtrim.c
 SRCS += ft_tolower.c
 SRCS += ft_toupper.c
 SRCS += strings.c
+SRCS += ft_bits.c
 
 OBJS = $(SRCS:.c=.o)
 

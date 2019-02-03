@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/15 09:30:25 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/01 16:35:00 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/03 16:16:38 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ size_t						append_token_env_var(t_oken *tok, char *str)
 		i++;
 	if (i > 0)
 	{
-		env_value = sh_get_env(str, i);
+		env_value = "/Users/bdevessi";
 		ft_concat_strings(&tok->payload, env_value, ft_strlen(env_value));
 	}
 	return (i);

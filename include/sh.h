@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 20:29:24 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/01 17:40:01 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/03 18:59:18 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,13 @@ typedef struct		s_ast_node
 	}				payload;
 }					t_ast_node;
 
+typedef struct		s_env
+{
+	size_t		len;
+	size_t		cap;
+	t_string	*vars;
+}					t_env;
+
 typedef enum		e_color
 {
 	BLUE,
@@ -89,6 +96,9 @@ t_ast_node			sh_construct_ast(const t_lexer *lexer);
 
 void				print_ast(t_ast_node root);
 
-char				*sh_get_env(char *env_var, size_t len);
+t_env				copy_env(char **envp);
+bool				put_env(t_env *env, const char *name, const char *value);
+void				print_env(const t_env *env);
+bool				unset_env(t_env *env, const char *name);
 
 #endif
