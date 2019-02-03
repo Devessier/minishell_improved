@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 20:29:24 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/03 18:59:18 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/03 23:19:29 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,14 @@ typedef enum		e_color
 	ORANGE
 }					t_color;
 
+typedef bool		(*t_shell_builtin_fn)(t_string *, t_env *);
+
+typedef struct		s_shell_builtin
+{
+	const char			name[20];
+	t_shell_builtin_fn	fn;
+}					t_shell_builtin;
+
 t_lexer				sh_lexer(t_string *string);
 bool				destroy_lexer(const t_lexer *lexer);
 
@@ -100,5 +108,17 @@ t_env				copy_env(char **envp);
 bool				put_env(t_env *env, const char *name, const char *value);
 void				print_env(const t_env *env);
 bool				unset_env(t_env *env, const char *name);
+
+/*
+** Shell builtins : mandatory and optional (bonus)
+*/
+
+bool				sh_builtin_exit(t_string *args, t_env *env);
+bool				sh_builtin_env(t_string *args, t_env *env);
+bool				sh_builtin_setenv(t_string *args, t_env *env);
+bool				sh_builtin_unsetenv(t_string *args, t_env *env);
+bool				sh_builtin_echo(t_string *args, t_env *env);
+bool				sh_builtin_cd(t_string *args, t_env *env);
+bool				sh_builtin_which(t_string *args, t_env *env);
 
 #endif
