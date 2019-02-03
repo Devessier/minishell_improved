@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/17 16:01:02 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/03 23:30:46 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/03 23:36:33 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,11 +104,11 @@ bool	unset_env(t_env *env, const char *name)
 			if ((equal = ft_strchr(env->vars[i].buff, '=')) != NULL
 					&& (equal - env->vars[i].buff) == (long)ft_strlen(name))
 			{
-				ft_free_string(&env->vars[i]);
+				free(env->vars[i].buff);
 				while (i++ < env->len - 1)
 					env->vars[i - 1] = env->vars[i];
-				env->vars[--env->len] = (t_string) { 0, 0, NULL };
-				return (true);
+				env->len--;
+				break ;
 			}
 		i++;
 	}
