@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/17 16:01:02 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/03 19:01:54 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/03 23:30:46 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ bool	put_env(t_env *env, const char *name, const char *value)
 	{
 		if (ft_strstr(env->vars[i].buff, name) == env->vars[i].buff)
 			if ((equal = ft_strchr(env->vars[i].buff, '=')) != NULL
-					&& (unsigned long)(equal - env->vars[i].buff) == ft_strlen(name))
+					&& (equal - env->vars[i].buff) == (long)ft_strlen(name))
 			{
 				if ((equal - env->vars[i].buff + 1 + value_len) > env->vars[i].cap)
 				{
@@ -81,6 +81,7 @@ bool	put_env(t_env *env, const char *name, const char *value)
 			tmp[i - 1] = env->vars[i - 1];
 		free(env->vars);
 		env->vars = tmp;	
+		env->cap <<= 1;
 	}
 	env->vars[env->len] = (t_string) { 0, 0, NULL };
 	if (!ft_extend_string(&env->vars[env->len], ft_strlen(name) + 1 + value_len))
@@ -101,7 +102,7 @@ bool	unset_env(t_env *env, const char *name)
 	{
 		if (ft_strstr(env->vars[i].buff, name) == env->vars[i].buff)
 			if ((equal = ft_strchr(env->vars[i].buff, '=')) != NULL
-					&& (unsigned long)(equal - env->vars[i].buff) == ft_strlen(name))
+					&& (equal - env->vars[i].buff) == (long)ft_strlen(name))
 			{
 				ft_free_string(&env->vars[i]);
 				while (i++ < env->len - 1)
