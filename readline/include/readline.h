@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/24 10:39:07 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/29 10:30:28 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/04 16:50:36 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ typedef struct              s_ft_rl_functions
 
 t_string                    ft_readline(char *prompt, t_ft_rl_prompt_colour colour);
 void                        ft_rl_init(void);
-void                        ft_rl_config_termios(bool init);
+void                        ft_rl_config_termios(int operation);
 
 extern t_ft_rl_functions    g_ft_rl_functions;
 

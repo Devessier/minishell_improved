@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/17 16:01:02 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/03 23:38:45 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/04 11:24:29 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,20 @@ void	print_env(const t_env *env)
 	i = 0;
 	while (i < env->len)
 		ft_putendl(env->vars[i++].buff);
+}
+
+t_string	*get_env(t_env *env, const char *name)
+{
+	size_t	i;
+	char	*equal;
+
+	i = 0;
+	while (i++ < env->len)
+		if (ft_strstr(env->vars[i - 1].buff, name) == env->vars[i - 1].buff
+			&& (equal = ft_strchr(env->vars[i - 1].buff, '=')) != NULL
+			&& (equal - env->vars[i - 1].buff) == (long)ft_strlen(name))
+			return (&env->vars[i - 1]);
+	return (NULL);
 }
 
 bool	put_env(t_env *env, const char *name, const char *value)

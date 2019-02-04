@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 20:29:24 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/03 23:19:29 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/04 14:50:58 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,9 @@ typedef struct		s_ast_node
 		}			root;
 		struct		{
 			t_string			string;
-			t_string			args;
+			size_t				len;
+			size_t				cap;
+			t_string			*args;
 			bool				dirty;
 		}			command;
 	}				payload;
@@ -92,14 +94,22 @@ typedef bool		(*t_shell_builtin_fn)(t_string *, t_env *);
 
 typedef struct		s_shell_builtin
 {
-	const char			name[20];
+	char				*name;
 	t_shell_builtin_fn	fn;
 }					t_shell_builtin;
+
+typedef enum		s_lookup_result
+{
+	LK_NOT_FOUND,
+	LK_BUILTIN,
+	LK_FOUND,
+	LK_PATH_TOO_LONG,
+}					t_lookup_result;
 
 t_lexer				sh_lexer(t_string *string);
 bool				destroy_lexer(const t_lexer *lexer);
 
-int					sh_exec(t_string *string);
+int					sh_exec(t_string *string, t_env *env);
 t_ast_node			sh_construct_ast(const t_lexer *lexer);
 
 void				print_ast(t_ast_node root);
@@ -108,6 +118,7 @@ t_env				copy_env(char **envp);
 bool				put_env(t_env *env, const char *name, const char *value);
 void				print_env(const t_env *env);
 bool				unset_env(t_env *env, const char *name);
+t_string			*get_env(t_env *env, const char *name);
 
 /*
 ** Shell builtins : mandatory and optional (bonus)

@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/31 16:54:34 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/01 18:08:22 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/04 15:18:45 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,9 @@ bool		init_ast_command(t_ast_node *command, t_string *string)
 		.payload = {
 			.command = {
 				.string = { 0, 0, NULL },
-				.args = { 0, 0, NULL },
+				.len = 0,
+				.cap = 0,
+				.args = NULL,
 				.dirty = false,
 			},
 		},
@@ -68,18 +70,27 @@ bool		append_command_to_root(t_ast_node *root, t_ast_node *command)
 	return (true);
 }
 
-void		print_ast(t_ast_node root)
+bool		append_arg_to_root(t_ast_node *command, t_string *arg)
 {
-	size_t		i = 0;
-	while (i < root.payload.root.len)
+	t_string	*args;
+	size_t		cap;
+	size_t		i;
+
+	cap = command->payload.command.cap == 0 ? 1 : command->payload.command.cap;
+	if (command->payload.command.len + 1 > command->payload.command.cap)
 	{
-		ft_putf("command = %s", root.payload.root.commands[i].payload.command.string.buff);
-		if (root.payload.root.commands[i].payload.command.args.buff)
-			ft_putf("; args = %s\n", root.payload.root.commands[i].payload.command.args.buff);
-		else
-			ft_putchar('\n');
-		i++;
+		cap <<= 1;
+		if (!(args = malloc(sizeof(t_string) * cap)))
+			return (false);
+		i = 0;
+		while (i++ < command->payload.command.len)
+			args[i - 1] = command->payload.command.args[i - 1];
+		free(command->payload.command.args);
+		command->payload.command.args = args;
+		command->payload.command.cap = cap;
 	}
+	command->payload.command.args[command->payload.command.len++] = *arg;
+	return (true);
 }
 
 t_ast_node	sh_construct_ast(const t_lexer *lexer)
@@ -99,12 +110,8 @@ t_ast_node	sh_construct_ast(const t_lexer *lexer)
 		{
 			if (args_index == 0)
 				init_ast_command(&command, &lexer->tokens[i].payload);
-			else
-			{
-				if (command.payload.command.args.len > 0)
-					ft_concat_strings(&command.payload.command.args, " ", 1);
-				ft_concat_strings(&command.payload.command.args, lexer->tokens[i].payload.buff, lexer->tokens[i].payload.len);	
-			}
+			else if (!append_arg_to_root(&command, &lexer->tokens[i].payload))
+				; // malloc error
 			args_index++;
 		}
 		else if (command.payload.command.string.len > 0 && !command.payload.command.dirty)
@@ -115,6 +122,5 @@ t_ast_node	sh_construct_ast(const t_lexer *lexer)
 	}
 	if (command.payload.command.string.len > 0 && !command.payload.command.dirty)
 		append_command_to_root(&root, &command);
-	destroy_lexer(lexer);
 	return (root);
 }

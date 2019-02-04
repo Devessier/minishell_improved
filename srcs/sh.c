@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 17:09:14 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/03 19:04:26 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/04 16:50:09 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,23 +23,19 @@ int		main(int argc, char **argv, char **envp)
 {
 	(void)argc, (void)argv;
 	const t_env	env = copy_env(envp);
+	int			status;
 
-	print_env(&env);
-	put_env((t_env *)&env, "TEUB", "qfjk ghqkfjghkqjfh jkqh gkjqhfgkqjfhg kjqhfg jkqdhg jkqfhg jkqhdfg jkqfhg jkqdfh gjkqhfg ");
-	print_env(&env);
-	ft_putstr("\n\n");
-	put_env((t_env *)&env, "TEST", "minishell");
-	unset_env((t_env *)&env, "TEUB");
-	put_env((t_env *)&env, "BAPTISTE", "DEVESSIER");
-	print_env(&env);
-	ft_putstr("\n\n");
+	status = 0;
+	ft_rl_config_termios(2);
 	while (42)
 	{
 		ft_rl_init();
-		t_string string = ft_readline("Minishell Improved", RL_ORANGE);
-		if (string.buff != NULL)
-			sh_exec(&string);
-		ft_rl_config_termios(false);
+		t_string string = ft_readline("Minishell Improved", status == 0 ? RL_BLUE : RL_RED);
+		if (string.len > 0)
+		{
+			ft_rl_config_termios(0);
+			status = sh_exec(&string, (t_env *)&env);
+		}
 	}
-	ft_rl_config_termios(false);
+	ft_rl_config_termios(0);
 }

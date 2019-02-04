@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/24 12:07:57 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/29 17:18:35 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/04 17:58:25 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include "internal.h"
 
 static bool                 got_sigwinch = false;
+static struct termios		original_termios_struct;
 
 static void                 handle_sigwinch(int sig)
 {
@@ -40,7 +41,7 @@ void                        ft_rl_init(void)
 {
 	signal(SIGWINCH, handle_sigwinch);
 	ft_rl_terminal_size(SET);
-	ft_rl_config_termios(true);
+	ft_rl_config_termios(1);
 }
 
 bool                        ft_rl_internal_checks(void)
@@ -54,14 +55,14 @@ bool                        ft_rl_internal_checks(void)
 	return (false);
 }
 
-void                        ft_rl_config_termios(bool init)
+void                        ft_rl_config_termios(int operation)
 {
-	static struct termios   original_termios_struct;
 	struct termios          raw_termios_struct;
 
-	if (init)
+	if (operation == 0)
+		tcsetattr(0, TCSAFLUSH, &original_termios_struct);
+	else if (operation == 1)
 	{
-		tcgetattr(0, &original_termios_struct);
 		raw_termios_struct = original_termios_struct;
 		raw_termios_struct.c_iflag &= ~(ICRNL | IXON);
 		raw_termios_struct.c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG);
@@ -70,5 +71,5 @@ void                        ft_rl_config_termios(bool init)
 		tcsetattr(0, TCSAFLUSH, &raw_termios_struct);
 	}
 	else
-		tcsetattr(0, TCSAFLUSH, &original_termios_struct);
+		tcgetattr(0, &original_termios_struct);
 }
