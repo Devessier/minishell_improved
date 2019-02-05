@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/15 09:34:03 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/05 11:11:34 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/05 14:46:06 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,7 +128,7 @@ int								exec_builtin(t_string *name, t_ast_node *command, t_env *env)
 int								sh_exec(t_string *string, t_env *env)
 {
 	char			path[PATH_MAX];
-	const t_lexer	lexer = sh_lexer(string);
+	const t_lexer	lexer = sh_lexer(string, env);
 	t_ast_node		root;
 	size_t			i;
 	t_lookup_result	result;

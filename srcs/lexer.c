@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/15 09:30:25 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/03 16:16:38 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/05 19:07:47 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <pwd.h>
+#include <sys/syslimits.h>
 
 static const t_oken_char	g_tokens[1 << 7] = {
 	['\"'] = T_DQUOTE,
@@ -58,10 +60,12 @@ void						copy_lexer(t_lexer *new, t_lexer *old)
 	free(new);
 }
 
-size_t						append_token_env_var(t_oken *tok, char *str)
+size_t						append_token_env_var(t_oken *tok, char *str, t_env *env)
 {
 	size_t		i;
-	char		*env_value;
+	t_string	*env_var;
+	char		*tmp;
+	char		old;
 
 	++str;
 	if (*str == '$')
@@ -71,15 +75,52 @@ size_t						append_token_env_var(t_oken *tok, char *str)
 		ft_concat_strings(&tok->payload, shell_pid, ft_strlen(shell_pid));
 		return (1);
 	}
+	if (*str == '0')
+		if (!ft_concat_strings(&tok->payload, "minishell", 9))
+			; // malloc error
 	if (!(*str == '_' || ft_isalpha(*str)))
-		return (0);
+		return (1);
 	i = 0;
 	while (i[str] && (ft_isalnum(i[str]) || i[str] == '_'))
 		i++;
-	if (i > 0)
+	old = str[i];
+	str[i] = '\0';
+	if (i > 0 && (env_var = get_env(env, str)) != NULL && env_var->buff != NULL)
 	{
-		env_value = "/Users/bdevessi";
-		ft_concat_strings(&tok->payload, env_value, ft_strlen(env_value));
+		tmp = ft_strchr(env_var->buff, '=');
+		ft_concat_strings(&tok->payload, tmp + 1, env_var->len - (tmp - env_var->buff) - 1);
+	}
+	str[i] = old;
+	return (i);
+}
+
+size_t						append_tilde(t_oken *tok, char *str, t_env *env)
+{
+	char			home_dir[PATH_MAX];
+	t_string		*home;
+	struct passwd	*passwd;
+	size_t			i;
+
+	i = 0;
+	if (!str[1] || str[1] == '/')
+	{
+		// replace ~ by the env var $HOME
+		if ((home = get_env(env, "HOME")) == NULL || home->len == 0)
+		{
+			if (!(passwd = getpwnam(getlogin())) || passwd->pw_dir == NULL)
+				return (0);
+			ft_strcpy(home_dir, passwd->pw_dir);
+		}
+		else
+			ft_strcpy(home_dir, ft_strchr(home->buff, '=') + 1);
+		while (str[i] != '\0' && (ft_isalnum(str[i]) || str[i] == '/' || str[i] == '-'))
+			i++;
+		ft_strncat(home_dir, str, i);
+		ft_concat_strings(&tok->payload, home_dir, ft_strlen(home_dir));
+	}
+	else
+	{
+		ft_putstr("search in DB\n");
 	}
 	return (i);
 }
@@ -108,7 +149,7 @@ bool						append_token(t_lexer *this, size_t index, t_oken token)
 	return (true);
 }
 
-bool						lexer_algorithm(t_lexer *lexer, uint8_t *str)
+bool						lexer_algorithm(t_lexer *lexer, uint8_t *str, t_env *env)
 {
 	t_oken_char	types[2];
 	size_t		tmp;
@@ -125,7 +166,7 @@ bool						lexer_algorithm(t_lexer *lexer, uint8_t *str)
 			break ;
 		if (*str == '$' && lexer->state != IN_SQUOTE)
 		{
-			tmp = append_token_env_var(&tok, (char *)str);
+			tmp = append_token_env_var(&tok, (char *)str, env);
 			if (tmp > 0)
 				str += tmp;
 			else if (!ft_concat_strings(&tok.payload, "$", 1))
@@ -166,7 +207,11 @@ bool						lexer_algorithm(t_lexer *lexer, uint8_t *str)
 			else
 			{
 				tok.type = T_WORD;
-				if (!ft_concat_strings(&tok.payload, (char *)str, 1))
+				if (*str == '~' && tok.payload.len == 0)
+				{
+					append_tilde(&tok, (char *)str, env);
+				}
+				else if (!ft_concat_strings(&tok.payload, (char *)str, 1))
 					return (false);
 			}
 		}
@@ -204,11 +249,11 @@ bool						destroy_lexer(const t_lexer *lexer)
 	return (true);
 }
 
-t_lexer						sh_lexer(t_string *string)
+t_lexer						sh_lexer(t_string *string, t_env *env)
 {
 	t_lexer			lexer;
 
 	init_lexer(&lexer);
-	lexer_algorithm(&lexer, (uint8_t *)string->buff);
+	lexer_algorithm(&lexer, (uint8_t *)string->buff, env);
 	return (lexer);
 }

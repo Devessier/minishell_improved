@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 20:29:24 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/05 11:09:04 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/05 14:46:15 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,7 @@ typedef enum		s_lookup_result
 	LK_PATH_TOO_LONG,
 }					t_lookup_result;
 
-t_lexer				sh_lexer(t_string *string);
+t_lexer				sh_lexer(t_string *string, t_env *env);
 bool				destroy_lexer(const t_lexer *lexer);
 
 int					sh_exec(t_string *string, t_env *env);
