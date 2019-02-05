@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/15 09:30:25 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/05 19:07:47 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/05 23:50:26 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,11 @@ size_t						append_token_env_var(t_oken *tok, char *str, t_env *env)
 	return (i);
 }
 
+int							is_valid_username_char(int c)
+{
+	return (c != 0 && (ft_isalnum(c) || c == '_' || c == '-' || c == '.'));
+}
+
 size_t						append_tilde(t_oken *tok, char *str, t_env *env)
 {
 	char			home_dir[PATH_MAX];
@@ -102,9 +107,12 @@ size_t						append_tilde(t_oken *tok, char *str, t_env *env)
 	size_t			i;
 
 	i = 0;
-	if (!str[1] || str[1] == '/')
+	str++;
+	while (is_valid_username_char(*str))
+		home_dir[i++] = *str++;
+	home_dir[i] = '\0';
+	if (*home_dir == '\0')
 	{
-		// replace ~ by the env var $HOME
 		if ((home = get_env(env, "HOME")) == NULL || home->len == 0)
 		{
 			if (!(passwd = getpwnam(getlogin())) || passwd->pw_dir == NULL)
@@ -113,15 +121,18 @@ size_t						append_tilde(t_oken *tok, char *str, t_env *env)
 		}
 		else
 			ft_strcpy(home_dir, ft_strchr(home->buff, '=') + 1);
-		while (str[i] != '\0' && (ft_isalnum(str[i]) || str[i] == '/' || str[i] == '-'))
-			i++;
-		ft_strncat(home_dir, str, i);
-		ft_concat_strings(&tok->payload, home_dir, ft_strlen(home_dir));
+	}
+	else if ((passwd = getpwnam(home_dir)) != NULL && passwd->pw_dir != NULL)
+	{
+		i += ft_strlen(str);
+		ft_strcpy(home_dir, passwd->pw_dir);
 	}
 	else
-	{
-		ft_putstr("search in DB\n");
-	}
+		return (0);
+	ft_strcat(home_dir, str);
+	if (!ft_concat_strings(&tok->payload, home_dir, ft_strlen(home_dir)))
+		return (-1);
+	ft_putf("i = %d\n", i);
 	return (i);
 }
 
@@ -209,9 +220,11 @@ bool						lexer_algorithm(t_lexer *lexer, uint8_t *str, t_env *env)
 				tok.type = T_WORD;
 				if (*str == '~' && tok.payload.len == 0)
 				{
-					append_tilde(&tok, (char *)str, env);
+					if ((tmp = append_tilde(&tok, (char *)str, env)) < 0)
+						return (false);
+					str += tmp;
 				}
-				else if (!ft_concat_strings(&tok.payload, (char *)str, 1))
+				if ((!(*str == '~' && tok.payload.len == 0) || (*str == '~' && tok.payload.len == 0 && tmp == 0)) && !ft_concat_strings(&tok.payload, (char *)str, 1))
 					return (false);
 			}
 		}
