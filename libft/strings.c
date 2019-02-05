@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/24 11:20:54 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/03 18:46:29 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/05 12:05:36 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,9 +67,9 @@ bool            ft_extend_string(t_string *this, size_t size)
 	size_t	cap;
 
 	cap = this->cap;
-	if (this->cap - this->len < size)
+	if (this->len + size > this->cap)
 	{
-		cap += cap == 0 ? size : size * 2;
+		cap = ft_round_up_2n_pow(cap + size);
 		tmp = this->buff;
 		if (!(this->buff = ft_strnew(cap)))
 			return (false);

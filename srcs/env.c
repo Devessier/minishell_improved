@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/17 16:01:02 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/04 11:24:29 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/05 13:03:21 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,8 +76,10 @@ bool	put_env(t_env *env, const char *name, const char *value)
 			{
 				if ((equal - env->vars[i].buff + 1 + value_len) > env->vars[i].cap)
 				{
-					if (!ft_extend_string(&env->vars[i], value_len + equal - env->vars[i].buff + 1 - env->cap))
+					ft_putf("cap = %d\n", env->vars[i].cap);
+					if (!ft_extend_string(&env->vars[i], value_len))
 						return (false);
+					ft_putf("cap = %d\n", env->vars[i].cap);
 					ft_strcpy(ft_strchr(env->vars[i].buff, '=') + 1, value);
 				}
 				else

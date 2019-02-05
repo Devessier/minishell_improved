@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/15 09:34:03 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/04 18:06:43 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/05 11:11:34 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,6 +114,17 @@ int								exec_xfile(char path[PATH_MAX], t_ast_node *command, t_env *env, int 
 	return (0);
 }
 
+int								exec_builtin(t_string *name, t_ast_node *command, t_env *env)
+{
+	size_t	i;
+
+	i = 0;
+	while (sh_builtins[i++].name != NULL)
+		if (ft_strcmp(sh_builtins[i - 1].name, name->buff) == 0)
+			return (sh_builtins[i - 1].fn(command->payload.command.args, command->payload.command.len, env));
+	return (127);
+}
+
 int								sh_exec(t_string *string, t_env *env)
 {
 	char			path[PATH_MAX];
@@ -124,18 +135,19 @@ int								sh_exec(t_string *string, t_env *env)
 	int				status;
 
 	if (lexer.state != GLOBAL_SCOPE)
-		return (ft_putf("syntax error\n"), 0);
+		return (ft_putf("minishell: syntax error: %s\n", string->buff), 126);
 	root = sh_construct_ast(&lexer);
 	i = 0;
 	while (i++ < root.payload.root.len)
 	{
-		result = lookup_path(&root.payload.root.commands[i - 1].payload.command.string, env, path);
-		if (result == LK_NOT_FOUND)
+		if ((result = lookup_path(&root.payload.root.commands[i - 1].payload.command.string, env, path)) == LK_NOT_FOUND)
 			ft_putf("minishell: command not found: %s\n", root.payload.root.commands[i - 1].payload.command.string.buff);
 		if (result == LK_PATH_TOO_LONG)
 			ft_putf("minishell: path to file is too long: %s\n", root.payload.root.commands[i - 1].payload.command.string);
 		if (result == LK_FOUND)
 			exec_xfile(path, &root.payload.root.commands[i - 1], env, &status);
+		else if (result == LK_BUILTIN)
+			status = exec_builtin(&root.payload.root.commands[i - 1].payload.command.string, &root.payload.root.commands[i - 1], env);
 		else
 			status = result == LK_NOT_FOUND ? 127 : 126;
 	}
