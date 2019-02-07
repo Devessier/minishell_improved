@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/15 09:34:03 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/05 14:46:06 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/07 16:20:47 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,16 +65,16 @@ t_lookup_result					locate_xfile(char *name, char *path_env_var, char path[PATH_
 
 t_lookup_result					lookup_path(t_string *name, t_env *env, char path[PATH_MAX])
 {
-	const t_string	*path_env_var = get_env(env, "PATH");
-	const bool		contains_slash = path_env_var && ft_strchr(name->buff, '/') != NULL;
+	const t_string	path_env_var = get_env(env, "PATH");
+	const bool		contains_slash = path_env_var.len > 0 && ft_strchr(name->buff, '/') != NULL;
 
 	if (contains_slash)
 		return (access(ft_strcpy(path, name->buff), X_OK) == 0 ? LK_FOUND : LK_NOT_FOUND);
 	else if (is_builtin(name->buff) != -1)
 		return (LK_BUILTIN);
-	if (!path_env_var)
+	if (!(path_env_var.len > 0))
 		return (LK_NOT_FOUND);
-	return (locate_xfile(name->buff, path_env_var->buff, path));
+	return (locate_xfile(name->buff, path_env_var.buff, path));
 }
 
 int								copy_args_env(char *buffer[ARG_MAX], char path[PATH_MAX], t_ast_node *command, t_env *env)

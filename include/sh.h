@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 20:29:24 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/05 14:46:15 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/07 16:18:47 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,7 @@
 # include <sys/types.h>
 # include <stdint.h>
 # include <stdbool.h>
-# include <sys/ioctl.h>
 # include "libft.h"
-# define ENV_SEPARATOR '\1'
 
 typedef enum		e_token_char
 {
@@ -118,7 +116,7 @@ t_env				copy_env(char **envp);
 bool				put_env(t_env *env, const char *name, const char *value);
 void				print_env(const t_env *env);
 bool				unset_env(t_env *env, const char *name);
-t_string			*get_env(t_env *env, const char *name);
+t_string			get_env(t_env *env, const char *name);
 
 /*
 ** Shell builtins : mandatory and optional (bonus)

@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/24 10:46:02 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/01 13:11:58 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/07 18:11:25 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ t_string    ft_readline(char *prompt, t_ft_rl_prompt_colour colour)
         if (ft_rl_getchar(&reader, 0, characters + 1) > 0)
         {
             ft_rl_handle_character((t_readline *)&rl, &reader, &string, characters);
-            if ((*characters = characters[1]) == 0x3 || *characters == 0xd)
+            if ((*characters = characters[1]) == 0x3 || *characters == 0xd || *characters == 0xA)
             {
                 if (*characters == 0x3)
                     ft_free_string(&string);

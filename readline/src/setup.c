@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/24 12:07:57 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/04 17:58:25 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/07 18:06:08 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,10 @@ struct winsize              *ft_rl_terminal_size(t_terminal_size_operation opera
 
 	if (operation == GET)
 		return (&ws);
-	ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws);
+	if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == -1)
+		;
+	if (ws.ws_col == 0)
+		ws.ws_col = 80;
 	return (&ws);
 }
 

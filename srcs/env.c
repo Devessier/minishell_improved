@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/17 16:01:02 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/05 15:22:01 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/07 16:18:33 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,18 +44,26 @@ void	print_env(const t_env *env)
 		ft_putendl(env->vars[i++].buff);
 }
 
-t_string	*get_env(t_env *env, const char *name)
+t_string	get_env(t_env *env, const char *name)
 {
-	size_t	i;
-	char	*equal;
+	size_t		i;
+	char		*equal;
+	t_string	value;
 
 	i = 0;
 	while (i++ < env->len)
 		if (ft_strstr(env->vars[i - 1].buff, name) == env->vars[i - 1].buff
 			&& (equal = ft_strchr(env->vars[i - 1].buff, '=')) != NULL
 			&& (equal - env->vars[i - 1].buff) == (long)ft_strlen(name))
-			return (&env->vars[i - 1]);
-	return (NULL);
+		{
+			value = (t_string) {
+				.len = env->vars[i - 1].len - (equal - env->vars[i - 1].buff) - 1,
+				.cap = env->vars[i - 1].cap,
+				.buff = equal + 1,
+			};
+			return (value);
+		}
+	return ((t_string) { 0, 0, NULL });
 }
 
 bool	put_env(t_env *env, const char *name, const char *value)
