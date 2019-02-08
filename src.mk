@@ -5,3 +5,4 @@ SRCS += srcs/env.c
 SRCS += srcs/ast.c
 SRCS += srcs/builtins/env.c
 SRCS += srcs/builtins/utils.c
+SRCS += srcs/search.c

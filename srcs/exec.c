@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/15 09:34:03 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/07 16:20:47 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/08 17:15:20 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include <unistd.h>
 #include <sys/syslimits.h>
 
-static const t_shell_builtin	sh_builtins[] = {
+t_shell_builtin					sh_builtins[] = {
 	{ "exit", sh_builtin_exit },
 	{ "env", sh_builtin_env },
 	{ "setenv", sh_builtin_setenv },
@@ -37,7 +37,7 @@ ssize_t							is_builtin(char *name)
 	return (-1);
 }
 
-t_lookup_result					locate_xfile(char *name, char *path_env_var, char path[PATH_MAX])
+t_lookup_result					lookup_path(char *name, char *path_env_var, char path[PATH_MAX])
 {
 	size_t	name_len;
 	char	*start;
@@ -63,7 +63,7 @@ t_lookup_result					locate_xfile(char *name, char *path_env_var, char path[PATH_
 	return (LK_NOT_FOUND);
 }
 
-t_lookup_result					lookup_path(t_string *name, t_env *env, char path[PATH_MAX])
+t_lookup_result					search_command(t_string *name, t_env *env, char path[PATH_MAX])
 {
 	const t_string	path_env_var = get_env(env, "PATH");
 	const bool		contains_slash = path_env_var.len > 0 && ft_strchr(name->buff, '/') != NULL;
@@ -74,7 +74,7 @@ t_lookup_result					lookup_path(t_string *name, t_env *env, char path[PATH_MAX])
 		return (LK_BUILTIN);
 	if (!(path_env_var.len > 0))
 		return (LK_NOT_FOUND);
-	return (locate_xfile(name->buff, path_env_var.buff, path));
+	return (lookup_path(name->buff, path_env_var.buff, path));
 }
 
 int								copy_args_env(char *buffer[ARG_MAX], char path[PATH_MAX], t_ast_node *command, t_env *env)
@@ -140,7 +140,7 @@ int								sh_exec(t_string *string, t_env *env)
 	i = 0;
 	while (i++ < root.payload.root.len)
 	{
-		if ((result = lookup_path(&root.payload.root.commands[i - 1].payload.command.string, env, path)) == LK_NOT_FOUND)
+		if ((result = search_command(&root.payload.root.commands[i - 1].payload.command.string, env, path)) == LK_NOT_FOUND)
 			ft_putf("minishell: command not found: %s\n", root.payload.root.commands[i - 1].payload.command.string.buff);
 		if (result == LK_PATH_TOO_LONG)
 			ft_putf("minishell: path to file is too long: %s\n", root.payload.root.commands[i - 1].payload.command.string);

@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/24 10:39:07 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/04 16:50:36 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/08 16:17:23 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,33 +31,41 @@ typedef enum				s_ft_rl_prompt_colour
 
 typedef struct              s_ft_rl_reader
 {
-    char		buffer[BUFF_SIZE];
+	char		buffer[BUFF_SIZE];
 	ssize_t		len;
 	size_t		index;
 }                           t_ft_rl_reader;
 
 typedef struct              s_readline
 {
-    char        *prompt;
-    size_t      prompt_len;
-    char        *colour;
-    size_t      cursor;
+	char        *prompt;
+	size_t      prompt_len;
+	char        *colour;
+	size_t      cursor;
 }               t_readline;
 
-typedef bool                (*t_ft_rl_func)(char, char);
+/*
+** t_ft_rl_func functions take two parameters :
+** - (char)c : the character which has been written by the user
+** - (t_readline *)rl : the t_readline struct which contains the cursor
+** - (t_string *)line : the line written by the user, wcich can be overwritten to enable autocomplete/history
+ */
+
+typedef bool                (*t_ft_rl_func)(char, t_readline *, t_string *);
 
 typedef struct              s_ft_rl_func_entry
 {
-    char            *name;
-    t_ft_rl_func    fn;
+	char            key;
+	t_ft_rl_func    fn;
 }                           t_fl_rl_func_entry;
 
 typedef struct              s_ft_rl_functions
 {
-    size_t              func_count;
-    t_fl_rl_func_entry  functions[FT_RL_MAX_FUNC];
+	size_t				func_count;
+	t_fl_rl_func_entry	functions[FT_RL_MAX_FUNC];
 }                           t_ft_rl_functions;
 
+bool						ft_rl_bind_key(char key, t_ft_rl_func func);
 t_string                    ft_readline(char *prompt, t_ft_rl_prompt_colour colour);
 void                        ft_rl_init(void);
 void                        ft_rl_config_termios(int operation);
