@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/15 09:30:25 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/07 18:03:23 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/08 13:18:50 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -241,7 +241,6 @@ bool						expand_dollars(t_string *token, t_env *env)
 	t_string	tmp;
 
 	i = 0;
-	ft_putf("len = %d\n", token->len);
 	while (i < token->len && token->buff[i])
 	{
 		if (token->buff[i] == '$')
@@ -268,16 +267,15 @@ bool						expand_dollars(t_string *token, t_env *env)
 					ft_memmove(token->buff + i - j + dollar.len - 1, token->buff + i, token->len - i);
 					ft_memmove(token->buff + i - j - 1, dollar.buff, dollar.len);
 					token->len += dollar.len - j - 1;
-					ft_putf("len = %d, str = %s\n", token->len, token->buff);
 				}
 				else
 				{
 					ft_memmove(token->buff + i - j - 1, token->buff + i, token->len - i);
-					ft_putf("i = %d\n", i);
-					token->len -= i + 1;
+					token->len -= j + 1;
+					i -= j + 1;
 					token->buff[token->len] = '\0';
-					ft_putf("(%d, %d), len = %d, str = %s\n", i, j, token->len, token->buff);
 				}
+				continue ;
 			}
 		}
 		i++;
