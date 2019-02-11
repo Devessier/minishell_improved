@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 20:29:24 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/11 15:06:52 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/11 17:24:24 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,7 +133,7 @@ bool					unset_env(t_env *env, const char *name);
 t_string				get_env(t_env *env, const char *name);
 
 char					*sh_complete_command(char *start, size_t len, t_env *env);
-char					*sh_complete_filename(char *start, size_t len);
+char					*sh_complete_filename(char *start, size_t len, bool must_exec);
 
 /*
 ** Shell builtins : mandatory and optional (bonus)

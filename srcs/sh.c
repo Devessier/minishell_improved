@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 17:09:14 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/11 16:48:54 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/11 17:49:45 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,9 @@ bool		sh_autocomplete(char c, t_readline *rl, t_string *line)
 			&& ft_extend_string(line, (filename_len = ft_strlen(filename)))
 			&& filename_len > completion.len)
 		{	
+			ft_putf("diff = %d, result is %s, filename_len = %d, completion len = %d\n", diff, filename, filename_len, completion.len);
 			ft_memmove(line->buff + diff + filename_len, line->buff + diff + completion.len, filename_len - completion.len);
+			ft_putendl("after");
 			ft_memmove(line->buff + diff + completion.len, filename + completion.len, filename_len - completion.len);
 			line->len += filename_len - completion.len;
 			ft_rl_move_cursor(rl, line, JUMP_TO_N_CHAR, filename_len - completion.len);

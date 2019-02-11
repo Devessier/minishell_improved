@@ -6,12 +6,12 @@
 #    By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/11/06 16:01:17 by bdevessi          #+#    #+#              #
-#    Updated: 2019/02/05 11:01:38 by bdevessi         ###   ########.fr        #
+#    Updated: 2019/02/11 17:50:32 by bdevessi         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = minishell
-CFLAGS = -Wall -Wextra -Werror -Iinclude -Ilibft/includes -Ireadline/include -g -fsanitize=address
+CFLAGS = -Wall -Wextra -Werror -Iinclude -Ilibft/includes -Ireadline/include -g
 CC = clang
 
 include src.mk

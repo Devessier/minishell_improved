@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/08 16:54:20 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/11 16:53:46 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/11 17:43:29 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,55 @@ static bool		search_command(char *command, char path[PATH_MAX], char *user_path)
 	return (max_len != 0);
 }
 
+static char			*search_file(char *string, char path[PATH_MAX], bool must_exec)
+{
+	(void)must_exec;
+	DIR				*dir;
+	struct dirent	*d;
+	size_t			max_len;
+
+	if (!(dir = opendir(path)))
+		return (NULL);
+	max_len = 0;
+	while ((d = readdir(dir)) != NULL)
+		if ((max_len == 0 || d->d_namlen <= max_len)
+			&& ft_strstr(d->d_name, string) == d->d_name)
+		{
+			ft_strcat(path, "/");
+			ft_strcat(path, d->d_name);
+			closedir(dir);
+			return (path);
+		}
+	closedir(dir);
+	return (NULL);
+}
+
+char			*sh_complete_filename(char *start, size_t len, bool must_exec)
+{
+	(void)must_exec;
+	static char		path[PATH_MAX];
+	char			*slash;
+	char			*result;
+	char			c;
+
+	slash = ft_strrchr(start, '/');
+	c = start[len];
+	start[len] = '\0';
+	if (slash == NULL)
+		ft_strcpy(path, ".");
+	else
+	{
+		*slash = '\0';
+		ft_strcpy(path, start);
+	}
+	result = search_file(slash + 1, path, must_exec);
+	start[len] = c;
+	*slash = '/';
+	if (result)
+		ft_putf("result = %s\n", result);
+	return (result);
+}
+
 char			*sh_complete_command(char *start, size_t len, t_env *env)
 {
 	const t_string	user_path = get_env(env, "PATH");
@@ -69,10 +118,11 @@ char			*sh_complete_command(char *start, size_t len, t_env *env)
 	const char		*slash = ft_strchr(start, '/');
 	char			tmp;
 
-	ft_bzero(path, PATH_MAX);
-	if (slash == NULL)
-		if (search_builtin(start, len, path))
-			return (path);
+	ft_bzero(path, sizeof(path));
+	if (slash == NULL && search_builtin(start, len, path))
+		return (path);
+	else if (slash != NULL)
+		return (sh_complete_filename(start, len, true));
 	if (user_path.len == 0)
 		return (NULL); // search only for builtins
 	tmp = start[len];
@@ -82,12 +132,6 @@ char			*sh_complete_command(char *start, size_t len, t_env *env)
 		start[len] = tmp;
 		return (path);
 	}
-	// search for binary files
-	return (NULL);
-}
-
-char			*sh_complete_filename(char *start, size_t len)
-{
-	(void)start, (void)len;
+	start[len] = tmp;
 	return (NULL);
 }
