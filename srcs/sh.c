@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 17:09:14 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/08 18:14:47 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/11 13:06:05 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,10 +42,13 @@ bool		sh_autocomplete(char c, t_readline *rl, t_string *line)
 	cmd_len = 0;
 	while (cmd_len < line->len && !(line->buff[cmd_len] == ' ' || line->buff[cmd_len] == ';'))
 		cmd_len++;
+	if (rl->cursor < cmd_len)
+		return (true);
 	filename = sh_complete_command(line->buff, cmd_len, g_env);
-	ft_putf("cmd_len = %d\n", cmd_len);
 	if (filename != NULL && ft_extend_string(line, ft_strlen(filename)))
-		ft_putf("cmd = %s\n", filename);
+		ft_putf("filename = %s\n", filename);
+	else
+		ft_putchar(0x7);
 	return (true);
 }
 

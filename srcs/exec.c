@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/15 09:34:03 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/08 17:15:20 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/11 13:33:15 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include "libft.h"
 #include <unistd.h>
 #include <sys/syslimits.h>
+#include <sys/stat.h>
 
 t_shell_builtin					sh_builtins[] = {
 	{ "exit", sh_builtin_exit },
@@ -39,14 +40,15 @@ ssize_t							is_builtin(char *name)
 
 t_lookup_result					lookup_path(char *name, char *path_env_var, char path[PATH_MAX])
 {
-	size_t	name_len;
-	char	*start;
-	char	*end;
+	struct stat	stats;
+	size_t		name_len;
+	char		*start;
+	char		*end;
 
 	if (!path_env_var)
 		return (LK_NOT_FOUND);
 	name_len = ft_strlen(name);
-	start = path_env_var + 5;
+	start = path_env_var;
 	while (*start)
 	{
 		if ((end = ft_strchr(start, ':')) == NULL)
@@ -56,8 +58,8 @@ t_lookup_result					lookup_path(char *name, char *path_env_var, char path[PATH_M
 		ft_strncpy(path, start, end - start);
 		ft_strcpy(path + (end - start), "/");
 		ft_strcpy(path + (end - start + 1), name);
-		if (access(path, X_OK) == 0)
-			return (LK_FOUND);
+		if (stat(path, &stats) == 0)
+			return (stats.st_mode & S_IXUSR ? LK_FOUND : LK_NO_RIGHTS);
 		start = end + !!*end;
 	}
 	return (LK_NOT_FOUND);
@@ -142,9 +144,11 @@ int								sh_exec(t_string *string, t_env *env)
 	{
 		if ((result = search_command(&root.payload.root.commands[i - 1].payload.command.string, env, path)) == LK_NOT_FOUND)
 			ft_putf("minishell: command not found: %s\n", root.payload.root.commands[i - 1].payload.command.string.buff);
-		if (result == LK_PATH_TOO_LONG)
+		else if (result == LK_NO_RIGHTS)
+			ft_putf("minishell: permission denied: %s\n", root.payload.root.commands[i - 1].payload.command.string.buff);
+		else if (result == LK_PATH_TOO_LONG)
 			ft_putf("minishell: path to file is too long: %s\n", root.payload.root.commands[i - 1].payload.command.string);
-		if (result == LK_FOUND)
+		else if (result == LK_FOUND)
 			exec_xfile(path, &root.payload.root.commands[i - 1], env, &status);
 		else if (result == LK_BUILTIN)
 			status = exec_builtin(&root.payload.root.commands[i - 1].payload.command.string, &root.payload.root.commands[i - 1], env);
