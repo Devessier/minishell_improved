@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/24 10:39:07 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/08 16:17:23 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/11 15:04:47 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,15 @@
 # define CSI "\x1b["
 # define COLOUR_RESET CSI "0m"
 # define CLEAR_SCREEN CSI "2J" CSI "H"
-# define FT_RL_MAX_FUNC 1 << 6
+# define FT_RL_MAX_FUNC 1 << 3
+
+typedef enum					e_cursor_move_type
+{
+	GOTO_BEGINNING,
+	GOTO_END,
+	JUMP_TO_N_WORD,
+	JUMP_TO_N_CHAR,
+}								t_cursor_move_type;
 
 typedef enum				s_ft_rl_prompt_colour
 {
@@ -65,8 +73,10 @@ typedef struct              s_ft_rl_functions
 	t_fl_rl_func_entry	functions[FT_RL_MAX_FUNC];
 }                           t_ft_rl_functions;
 
-bool						ft_rl_bind_key(char key, t_ft_rl_func func);
 t_string                    ft_readline(char *prompt, t_ft_rl_prompt_colour colour);
+
+void						ft_rl_move_cursor(t_readline *rl, t_string *string, t_cursor_move_type type, ssize_t move_of);
+bool						ft_rl_bind_key(char key, t_ft_rl_func func);
 void                        ft_rl_init(void);
 void                        ft_rl_config_termios(int operation);
 

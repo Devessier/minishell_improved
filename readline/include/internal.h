@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/24 13:26:29 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/29 16:31:05 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/11 13:49:08 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,6 @@
 # include <stdbool.h>
 # include "readline.h"
 # define BELL 0x7
-
-typedef enum                    e_cursor_move_type
-{
-	GOTO_BEGINNING,
-	GOTO_END,
-	JUMP_TO_N_WORD,
-	JUMP_TO_N_CHAR,
-}                               t_cursor_move_type;
 
 typedef enum                    e_terminal_size_operation
 {

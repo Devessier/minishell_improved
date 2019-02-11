@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/15 09:30:25 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/08 13:18:50 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/11 15:54:08 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -238,7 +238,6 @@ bool						expand_dollars(t_string *token, t_env *env)
 	t_string	dollar;
 	size_t		i;
 	size_t		j;
-	t_string	tmp;
 
 	i = 0;
 	while (i < token->len && token->buff[i])
@@ -263,7 +262,6 @@ bool						expand_dollars(t_string *token, t_env *env)
 				{
 					if (!ft_extend_string(token, dollar.len - j - 1))
 						return (false);
-					tmp = (t_string) {};
 					ft_memmove(token->buff + i - j + dollar.len - 1, token->buff + i, token->len - i);
 					ft_memmove(token->buff + i - j - 1, dollar.buff, dollar.len);
 					token->len += dollar.len - j - 1;

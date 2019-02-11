@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/08 16:54:20 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/11 13:00:13 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/11 16:53:46 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ static bool		search_command(char *command, char path[PATH_MAX], char *user_path)
 		path_to_command[end - start] = '\0';
 		dir = opendir(path_to_command);
 		while (dir && (d = readdir(dir)) != NULL)
-			if ((max_len == 0 || (max_len > 0 && d->d_namlen < max_len))
+			if ((max_len == 0 || d->d_namlen < max_len)
 				&& ft_strstr(d->d_name, command) == d->d_name)
 				{
 					ft_strcpy(path, d->d_name);

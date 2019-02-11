@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 20:29:24 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/11 13:19:40 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/11 15:06:52 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,6 +104,19 @@ typedef enum			s_lookup_result
 	LK_NO_RIGHTS,
 	LK_PATH_TOO_LONG,
 }						t_lookup_result;
+
+enum					e_autocomplete_state
+{
+	AC_COMMAND,
+	AC_FILE
+};
+
+typedef struct			s_completion
+{
+	enum e_autocomplete_state	state;
+	size_t						len;
+	char						*start;
+}						t_completion;
 
 t_lexer					sh_lexer(t_string *string, t_env *env);
 bool					destroy_lexer(const t_lexer *lexer);
