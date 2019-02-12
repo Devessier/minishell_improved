@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 17:09:14 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/11 17:49:45 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/12 14:54:55 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,7 @@ t_completion		autocomplete_state(t_string *line, t_readline *rl)
 
 bool		sh_autocomplete(char c, t_readline *rl, t_string *line)
 {
+	char				path[PATH_MAX];
 	const t_completion	completion = autocomplete_state(line, rl);
 	char				*filename;
 	size_t				filename_len;
@@ -70,23 +71,20 @@ bool		sh_autocomplete(char c, t_readline *rl, t_string *line)
 
 	if (c != '\t' || line->len == 0 || completion.len == 0)
 		return (true);
-	if (completion.state == AC_COMMAND)
-	{
-		diff = completion.start - line->buff;
-		if ((filename = sh_complete_command(completion.start, completion.len, g_env)) != NULL
-			&& ft_extend_string(line, (filename_len = ft_strlen(filename)))
+	diff = completion.start - line->buff;
+	filename = completion.state == AC_COMMAND
+		? sh_complete_command(completion.start, completion.len, path, g_env)
+		: sh_complete_filename(completion.start, completion.len, path, false);
+	if (filename != NULL && ft_extend_string(line, (filename_len = ft_strlen(filename)))
 			&& filename_len > completion.len)
-		{	
-			ft_putf("diff = %d, result is %s, filename_len = %d, completion len = %d\n", diff, filename, filename_len, completion.len);
-			ft_memmove(line->buff + diff + filename_len, line->buff + diff + completion.len, filename_len - completion.len);
-			ft_putendl("after");
-			ft_memmove(line->buff + diff + completion.len, filename + completion.len, filename_len - completion.len);
-			line->len += filename_len - completion.len;
-			ft_rl_move_cursor(rl, line, JUMP_TO_N_CHAR, filename_len - completion.len);
-		}
-		else
-			ft_putchar(0x7);
+	{	
+		ft_memmove(line->buff + diff + filename_len, line->buff + diff + completion.len, line->len - completion.len);
+		ft_memmove(line->buff + diff, filename, filename_len);
+		line->len += filename_len - completion.len;
+		ft_rl_move_cursor(rl, line, JUMP_TO_N_CHAR, filename_len - completion.len);
 	}
+	else
+		ft_putchar(0x7);
 	return (true);
 }
 
