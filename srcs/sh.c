@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 17:09:14 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/12 15:12:42 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/12 15:37:55 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,9 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <sys/ioctl.h>
 #include "sh.h"
 #include "libft.h"
-#include <sys/ioctl.h>
 #include "readline.h"
 
 static bool		exit_sh = false;

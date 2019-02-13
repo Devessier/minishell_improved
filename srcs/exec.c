@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/15 09:34:03 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/11 13:33:15 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/13 10:21:48 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,10 +68,15 @@ t_lookup_result					lookup_path(char *name, char *path_env_var, char path[PATH_M
 t_lookup_result					search_command(t_string *name, t_env *env, char path[PATH_MAX])
 {
 	const t_string	path_env_var = get_env(env, "PATH");
-	const bool		contains_slash = path_env_var.len > 0 && ft_strchr(name->buff, '/') != NULL;
+	const bool		contains_slash = ft_strchr(name->buff, '/') != NULL;
+	struct stat		stats;
 
 	if (contains_slash)
-		return (access(ft_strcpy(path, name->buff), X_OK) == 0 ? LK_FOUND : LK_NOT_FOUND);
+	{
+		if (lstat(ft_strcpy(path, name->buff), &stats) != 0)
+			return (LK_NOT_FOUND);
+		return (((stats.st_mode & S_IFREG) && (stats.st_mode & S_IXUSR)) ? LK_FOUND : LK_NO_RIGHTS);
+	}
 	else if (is_builtin(name->buff) != -1)
 		return (LK_BUILTIN);
 	if (!(path_env_var.len > 0))
