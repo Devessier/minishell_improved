@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 17:09:14 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/12 15:37:55 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/14 11:18:35 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,8 +111,12 @@ int			main(int argc, char **argv, char **envp)
 		if (line.len > 0)
 		{
 			ft_rl_config_termios(0);
-			status = sh_exec(&line, (t_env *)&env);
+			if (ft_strncmp(line.buff, "exit", 4) == 0)
+				exit_sh = true;
+			else
+				status = sh_exec(&line, (t_env *)&env);
 		}
+		ft_free_string(&line);
 	}
 	ft_putf("exit\n");
 	ft_rl_config_termios(0);

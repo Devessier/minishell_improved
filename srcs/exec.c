@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/15 09:34:03 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/13 10:21:48 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/14 11:22:29 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 #include <sys/stat.h>
 
 t_shell_builtin					sh_builtins[] = {
-	{ "exit", sh_builtin_exit },
 	{ "env", sh_builtin_env },
 	{ "setenv", sh_builtin_setenv },
 	{ "unsetenv", sh_builtin_unsetenv },

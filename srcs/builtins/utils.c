@@ -6,19 +6,13 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/04 09:45:43 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/05 13:24:12 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/14 11:21:56 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sh.h"
 #include "readline.h"
 #include <stdbool.h>
-
-int		sh_builtin_exit(t_string *args, size_t len, t_env *env)
-{
-	(void)args, (void)len, (void)env;
-	return (true);
-}
 
 int		sh_builtin_echo(t_string *args, size_t len, t_env *env)
 {

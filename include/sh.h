@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 20:29:24 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/13 10:21:55 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/14 11:22:08 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,7 +140,6 @@ char					*sh_complete_filename(char *start, size_t len, char path[PATH_MAX], boo
 ** Shell builtins : mandatory and optional (bonus)
 */
 
-int						sh_builtin_exit(t_string *args, size_t len, t_env *env);
 int						sh_builtin_env(t_string *args, size_t len, t_env *env);
 int						sh_builtin_setenv(t_string *args, size_t len, t_env *env);
 int				 		sh_builtin_unsetenv(t_string *args, size_t len, t_env *env);

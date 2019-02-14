@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/24 10:46:02 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/08 16:32:16 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/14 11:44:41 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,11 +120,10 @@ bool        ft_rl_handle_character(t_readline *rl, t_ft_rl_reader *reader, t_str
 	char    next_c;
 
 	if (characters[1] == 0x1b)
-	{
-		ft_rl_getchar_blocking(reader, 0, &next_c);
-		if (next_c == '[')
+		if (ft_rl_getchar_blocking(reader, 0, &next_c) != -1 && next_c == '[')
 		{
-			ft_rl_getchar_blocking(reader, 0, &next_c);
+			if (ft_rl_getchar_blocking(reader, 0, &next_c) == -1)
+				return (false);
 			if (ft_isdigit(next_c))
 				ft_rl_getchar_blocking(reader, 0, &next_c);
 			else if (next_c == 'C' || next_c == 'D')
@@ -132,7 +131,6 @@ bool        ft_rl_handle_character(t_readline *rl, t_ft_rl_reader *reader, t_str
 			else if (next_c == 'A' || next_c == 'B')
 				;// vertical move, move in the history
 		}
-	}
 	else if (characters[1] == 0x7f || (characters[1] == 0x4 && rl->cursor < string->len))
 		ft_rl_delete_char(rl, string, characters[1] == 0x4 ? DELETE_CURR_CHAR : DELETE_PREV_CHAR);
 	else if (characters[1] == 0x5 || characters[1] == 0x1)
