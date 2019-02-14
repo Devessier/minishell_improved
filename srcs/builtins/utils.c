@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/04 09:45:43 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/14 16:15:01 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/14 20:55:48 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,10 +84,14 @@ int		sh_builtin_cd(t_string *args, size_t len, t_env *env)
 
 	print_new_location = false;
 	if (len == 0)
-		; // redirect to home
-	if (*args[0].buff == '-' && args[0].buff[1] == '\0')
 	{
-		if ((string = get_env(env, "OLDPWD")).buff == NULL)
+		if ((string = get_env(env, "HOME")).len == 0)
+			return (0);
+		ft_strcpy(path, string.buff);
+	}
+	else if (*args[0].buff == '-' && args[0].buff[1] == '\0')
+	{
+		if ((string = get_env(env, "OLDPWD")).len == 0)
 		{
 			ft_putstr("minishell: cd: OLDPWD not set\n");
 			return (127);
