@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 17:09:14 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/14 11:18:35 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/14 12:35:35 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,7 @@ bool		sh_setup_rl_bound_functions(void)
 int			main(int argc, char **argv, char **envp)
 {
 	(void)argc, (void)argv;
+	const int	stdin_tty = isatty(0);
 	const t_env	env = copy_env(envp);
 	int			status;
 	t_string	line;
@@ -116,6 +117,8 @@ int			main(int argc, char **argv, char **envp)
 			else
 				status = sh_exec(&line, (t_env *)&env);
 		}
+		else if (!stdin_tty)
+			exit_sh = true;
 		ft_free_string(&line);
 	}
 	ft_putf("exit\n");

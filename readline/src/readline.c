@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/24 10:46:02 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/14 11:44:41 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/14 12:02:24 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,6 @@ ssize_t		ft_rl_call_bound_functions(char c, t_readline *rl, t_string *line)
 	i = 0;
 	count = 0;
 	while (i++ < g_ft_rl_functions.func_count)
-	{
 		if (g_ft_rl_functions.functions[i - 1].key == c)
 		{
 			if (!g_ft_rl_functions.functions[i - 1].fn(c, rl, line))
@@ -75,7 +74,6 @@ ssize_t		ft_rl_call_bound_functions(char c, t_readline *rl, t_string *line)
 			else
 				count++;
 		}
-	}
 	return (count);
 }
 
@@ -86,6 +84,7 @@ t_string    ft_readline(char *prompt, t_ft_rl_prompt_colour colour)
 	char                characters[2];
 	t_string            string;
 	bool				reset;
+	int					getchar_result;
 
 	reset = true;
 	init_ft_rl_reader_string(&reader, &string);
@@ -97,7 +96,7 @@ t_string    ft_readline(char *prompt, t_ft_rl_prompt_colour colour)
 			reset = true;
 		if (string.buff != NULL)
 			ft_rl_display((t_readline *)&rl, &string, reset);
-		if (ft_rl_getchar(&reader, 0, characters + 1) > 0)
+		if ((getchar_result = ft_rl_getchar(&reader, 0, characters + 1)) > 0)
 		{
 			if (ft_rl_call_bound_functions(characters[1], (t_readline *)&rl, &string) == -1)
 				return (string);
@@ -109,6 +108,8 @@ t_string    ft_readline(char *prompt, t_ft_rl_prompt_colour colour)
 				break ;
 			}
 		}
+		else if (getchar_result == -1)
+			break ;
 		reset = false;
 	}
 	ft_putchar('\n');
@@ -119,18 +120,17 @@ bool        ft_rl_handle_character(t_readline *rl, t_ft_rl_reader *reader, t_str
 {
 	char    next_c;
 
-	if (characters[1] == 0x1b)
-		if (ft_rl_getchar_blocking(reader, 0, &next_c) != -1 && next_c == '[')
-		{
-			if (ft_rl_getchar_blocking(reader, 0, &next_c) == -1)
-				return (false);
-			if (ft_isdigit(next_c))
-				ft_rl_getchar_blocking(reader, 0, &next_c);
-			else if (next_c == 'C' || next_c == 'D')
-				ft_rl_move_cursor(rl, string, JUMP_TO_N_CHAR, next_c == 'C' ? 1 : -1);
-			else if (next_c == 'A' || next_c == 'B')
-				;// vertical move, move in the history
-		}
+	if (characters[1] == 0x1b && ft_rl_getchar_blocking(reader, 0, &next_c) != -1 && next_c == '[')
+	{
+		if (ft_rl_getchar_blocking(reader, 0, &next_c) == -1)
+			return (false);
+		if (ft_isdigit(next_c))
+			ft_rl_getchar_blocking(reader, 0, &next_c);
+		else if (next_c == 'C' || next_c == 'D')
+			ft_rl_move_cursor(rl, string, JUMP_TO_N_CHAR, next_c == 'C' ? 1 : -1);
+		else if (next_c == 'A' || next_c == 'B')
+			;// vertical move, move in the history
+	}
 	else if (characters[1] == 0x7f || (characters[1] == 0x4 && rl->cursor < string->len))
 		ft_rl_delete_char(rl, string, characters[1] == 0x4 ? DELETE_CURR_CHAR : DELETE_PREV_CHAR);
 	else if (characters[1] == 0x5 || characters[1] == 0x1)

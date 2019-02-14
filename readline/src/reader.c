@@ -6,17 +6,17 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/24 16:32:37 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/14 11:42:27 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/14 11:57:34 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "readline.h"
 #include <sys/types.h>
-
-static const int	stdin_tty = isatty(0);
+#include <unistd.h>
 
 int					ft_rl_getchar(t_ft_rl_reader *this, const int fd, char *c)
 {
+	const int		stdin_tty = isatty(0);
 	const size_t	remaining = this->len - this->index;
 	size_t			buffered;
 
