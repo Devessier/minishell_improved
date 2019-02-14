@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/17 16:01:02 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/07 16:18:33 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/14 22:11:03 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,7 @@ bool	put_env(t_env *env, const char *name, const char *value)
 	size_t			i;
 	char			*equal;
 	t_string		*tmp;
+	size_t			cap;
 
 	if (!(name && *name))
 		return (false);
@@ -96,14 +97,15 @@ bool	put_env(t_env *env, const char *name, const char *value)
 	}
 	if (!(env->len < env->cap))
 	{
-		if (!(tmp = malloc(sizeof(t_string) * (env->cap << 1))))
+		cap = env->cap == 0 ? 1 : env->cap;
+		if (!(tmp = malloc(sizeof(t_string) * (cap << 1))))
 			return (false);
 		i = 0;
 		while (i++ < env->len)
 			tmp[i - 1] = env->vars[i - 1];
 		free(env->vars);
 		env->vars = tmp;	
-		env->cap <<= 1;
+		env->cap = cap << 1;
 	}
 	env->vars[env->len] = (t_string) { ft_strlen(name) + 1 + value_len, 0, NULL };
 	if (!ft_extend_string(&env->vars[env->len], env->vars[env->len].len))
