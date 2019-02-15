@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/17 16:01:02 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/14 22:11:03 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/15 11:52:22 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,7 @@ bool	put_env(t_env *env, const char *name, const char *value)
 				}
 				else
 					ft_strcpy(equal + 1, value);
+				env->vars[i].len = value_len + ft_strlen(name) + 1;
 				return (true);
 			}
 		i++;

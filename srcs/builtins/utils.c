@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/04 09:45:43 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/14 20:55:48 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/15 11:49:29 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,6 +111,23 @@ int		sh_builtin_cd(t_string *args, size_t len, t_env *env)
 
 int		sh_builtin_which(t_string *args, size_t len, t_env *env)
 {
-	(void)args, (void)len, (void)env;
-	return (true);
+	char			path[PATH_MAX];
+	t_lookup_result	result;
+	size_t			i;
+
+	if (len == 0)
+		return (ft_putendl("minishell: which: too few arguments"), 127);
+	i = 0;
+	while (i++ < len)
+		if ((result = sh_search_command(&args[i - 1], env, path)) == LK_NOT_FOUND)
+			ft_putf("%s: command not found\n", args[i - 1].buff);
+		else if (result == LK_BUILTIN)
+			ft_putf("%s: shell built-in command\n", args[i - 1].buff);
+		else if (result == LK_FOUND)
+			ft_putendl(path);
+		else if (result == LK_NO_RIGHTS)
+			ft_putf("%s: permission denied\n", path);
+		else
+			ft_putf("%s: path to file too long\n", path);
+	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/15 09:34:03 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/14 11:22:29 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/15 11:31:38 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ t_shell_builtin					sh_builtins[] = {
 	{ "echo", sh_builtin_echo },
 	{ "cd", sh_builtin_cd },
 	{ "which", sh_builtin_which },
+	{ "exit", NULL },
 	{ NULL, NULL },
 };
 
@@ -64,7 +65,7 @@ t_lookup_result					lookup_path(char *name, char *path_env_var, char path[PATH_M
 	return (LK_NOT_FOUND);
 }
 
-t_lookup_result					search_command(t_string *name, t_env *env, char path[PATH_MAX])
+t_lookup_result					sh_search_command(t_string *name, t_env *env, char path[PATH_MAX])
 {
 	const t_string	path_env_var = get_env(env, "PATH");
 	const bool		contains_slash = ft_strchr(name->buff, '/') != NULL;
@@ -146,7 +147,7 @@ int								sh_exec(t_string *string, t_env *env)
 	i = 0;
 	while (i++ < root.payload.root.len)
 	{
-		if ((result = search_command(&root.payload.root.commands[i - 1].payload.command.string, env, path)) == LK_NOT_FOUND)
+		if ((result = sh_search_command(&root.payload.root.commands[i - 1].payload.command.string, env, path)) == LK_NOT_FOUND)
 			ft_putf("minishell: command not found: %s\n", root.payload.root.commands[i - 1].payload.command.string.buff);
 		else if (result == LK_NO_RIGHTS)
 			ft_putf("minishell: permission denied: %s\n", root.payload.root.commands[i - 1].payload.command.string.buff);

@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 20:29:24 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/14 11:22:08 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/15 11:09:22 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,6 +135,8 @@ t_string				get_env(t_env *env, const char *name);
 
 char					*sh_complete_command(char *start, size_t len, char path[PATH_MAX], t_env *env);
 char					*sh_complete_filename(char *start, size_t len, char path[PATH_MAX], bool must_exec);
+
+t_lookup_result			sh_search_command(t_string *name, t_env *env, char path[PATH_MAX]);
 
 /*
 ** Shell builtins : mandatory and optional (bonus)
