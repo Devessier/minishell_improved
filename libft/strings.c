@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/24 11:20:54 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/05 12:05:36 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/21 11:18:13 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-t_string        ft_new_string(char *c, bool char_mode)
+t_string	ft_new_string(char *c, bool char_mode)
 {
 	t_string	string;
 
@@ -33,7 +33,7 @@ t_string        ft_new_string(char *c, bool char_mode)
 	return (string);
 }
 
-bool            ft_concat_strings(t_string *this, char *string, size_t len)
+bool		ft_concat_strings(t_string *this, char *string, size_t len)
 {
 	size_t			cap;
 	char			*tmp;
@@ -61,7 +61,7 @@ bool            ft_concat_strings(t_string *this, char *string, size_t len)
 	return (true);
 }
 
-bool            ft_extend_string(t_string *this, size_t size)
+bool		ft_extend_string(t_string *this, size_t size)
 {
 	char	*tmp;
 	size_t	cap;
@@ -81,7 +81,7 @@ bool            ft_extend_string(t_string *this, size_t size)
 	return (true);
 }
 
-bool            ft_free_string(t_string *this)
+bool		ft_free_string(t_string *this)
 {
 	free(this->buff);
 	this->buff = NULL;
@@ -90,12 +90,7 @@ bool            ft_free_string(t_string *this)
 	return (true);
 }
 
-ssize_t			ft_min(ssize_t a, ssize_t b)
-{
-	return ((a < b) ? a : b);
-}
-
-void            ft_putnstring(t_string *this, size_t start, size_t n)
+void		ft_putnstring(t_string *this, size_t start, size_t n)
 {
 	write(1, this->buff + start, ft_min(this->len, n));
 }

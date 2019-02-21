@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/12 09:57:50 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/31 14:45:36 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/21 11:12:40 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,5 +59,4 @@ char	*ft_itoa_buff(int n, char *buffer)
 	}
 	*buffer = '\0';
 	return (buffer - (len + (n < 0)));
-
 }
