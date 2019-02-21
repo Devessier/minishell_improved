@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/24 13:24:22 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/01/29 16:20:11 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/15 17:20:22 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include "libft.h"
 #include <unistd.h>
 
-bool    ft_rl_concat_strings_cursor(t_string *string, t_readline *rl, char c)
+bool	ft_rl_concat_strings_cursor(t_string *string, t_readline *rl, char c)
 {
 	if (!ft_extend_string(string, 1))
 		return (false);
@@ -31,7 +31,7 @@ bool    ft_rl_concat_strings_cursor(t_string *string, t_readline *rl, char c)
 	return (true);
 }
 
-void    ft_rl_delete_char(t_readline *rl, t_string *string, t_delete_type type)
+void	ft_rl_delete_char(t_readline *rl, t_string *string, t_delete_type type)
 {
 	if ((type == DELETE_PREV_CHAR && rl->cursor == 0)
 			|| (type == DELETE_CURR_CHAR && string->len > 0 && rl->cursor == string->len))
@@ -43,7 +43,7 @@ void    ft_rl_delete_char(t_readline *rl, t_string *string, t_delete_type type)
 		ft_rl_move_cursor(rl, string, JUMP_TO_N_CHAR, -1);
 }
 
-void    ft_rl_move_cursor(t_readline *rl, t_string *string, t_cursor_move_type type, ssize_t move_of)
+void	ft_rl_move_cursor(t_readline *rl, t_string *string, t_cursor_move_type type, ssize_t move_of)
 {
 	const int8_t    sign = move_of > 0 ? 1 : -1;
 	char            *pointer;
@@ -92,7 +92,7 @@ ssize_t	ft_positive(ssize_t a, ssize_t b)
 	return (a);
 }
 
-void    ft_rl_display(t_readline *rl, t_string *line, bool reset)
+void	ft_rl_display(t_readline *rl, t_string *line, bool reset)
 {
 	const unsigned short    prompt_end = rl->prompt_len % ft_rl_terminal_size(GET)->ws_col;
 	const unsigned short    usable_width = ft_rl_terminal_size(GET)->ws_col - prompt_end;

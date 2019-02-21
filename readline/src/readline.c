@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/24 10:46:02 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/14 12:02:24 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/21 12:25:05 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,20 +21,6 @@
 #include <stdbool.h>
 
 t_ft_rl_functions   g_ft_rl_functions = { 0, { { 0, 0 } } };
-
-static void init_ft_rl_reader_string(t_ft_rl_reader *reader, t_string *string)
-{
-	*reader = (t_ft_rl_reader) {
-		.len = 0,
-		.index = 0,
-	};
-	ft_bzero(reader->buffer, sizeof(reader->buffer));
-	*string = (t_string) {
-		.len = 0,
-		.cap = 0,
-		.buff = NULL,
-	};
-}
 
 char		*ft_rl_prompt_colour(t_ft_rl_prompt_colour colour)
 {
@@ -146,12 +132,4 @@ bool        ft_rl_handle_character(t_readline *rl, t_ft_rl_reader *reader, t_str
 	else if (characters[1] == 0x4)
 		ft_putchar(BELL);
 	return (true);
-}
-
-bool        ft_rl_exit(char curr, char prev)
-{
-	(void)curr, (void)prev;
-	// free what has to be freed
-	ft_putf("exit\n");
-	exit(0);
 }

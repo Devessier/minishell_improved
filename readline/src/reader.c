@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/24 16:32:37 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/14 11:57:34 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/21 12:24:40 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-int					ft_rl_getchar(t_ft_rl_reader *this, const int fd, char *c)
+int		ft_rl_getchar(t_ft_rl_reader *this, const int fd, char *c)
 {
 	const int		stdin_tty = isatty(0);
 	const size_t	remaining = this->len - this->index;
@@ -37,7 +37,8 @@ int					ft_rl_getchar(t_ft_rl_reader *this, const int fd, char *c)
 	return (1);
 }
 
-int				ft_rl_getchar_blocking(t_ft_rl_reader *this, const int fd, char *c)
+int		ft_rl_getchar_blocking(t_ft_rl_reader *this
+		, const int fd, char *c)
 {
 	int n;
 
@@ -45,4 +46,18 @@ int				ft_rl_getchar_blocking(t_ft_rl_reader *this, const int fd, char *c)
 		if (n == -1)
 			return (n);
 	return (n == 1 ? 1 : -1);
+}
+
+void	init_ft_rl_reader_string(t_ft_rl_reader *reader, t_string *string)
+{
+	*reader = (t_ft_rl_reader) {
+		.len = 0,
+		.index = 0,
+	};
+	ft_bzero(reader->buffer, sizeof(reader->buffer));
+	*string = (t_string) {
+		.len = 0,
+		.cap = 0,
+		.buff = NULL,
+	};
 }
