@@ -6,14 +6,16 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/24 13:24:22 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/15 17:20:22 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/21 15:38:08 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <unistd.h>
+#include <stdint.h>
+#include <stdbool.h>
 #include "readline.h"
 #include "internal.h"
 #include "libft.h"
-#include <unistd.h>
 
 bool	ft_rl_concat_strings_cursor(t_string *string, t_readline *rl, char c)
 {

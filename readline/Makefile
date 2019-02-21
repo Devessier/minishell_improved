@@ -6,7 +6,7 @@
 #    By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/01/24 11:27:35 by bdevessi          #+#    #+#              #
-#    Updated: 2019/02/21 13:45:35 by bdevessi         ###   ########.fr        #
+#    Updated: 2019/02/21 16:57:19 by bdevessi         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,9 +21,9 @@ AR = ar rcs
 
 SRCS += src/readline.c
 SRCS += src/setup.c
-SRCS += src/utils.c
 SRCS += src/display.c
 SRCS += src/reader.c
+SRCS += src/prompt.c
 
 OBJS = $(SRCS:.c=.o)
 

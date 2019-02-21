@@ -6,30 +6,18 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/24 10:46:02 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/21 12:25:05 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/21 16:57:04 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <sys/types.h>
-#include <unistd.h>
-#include <stdlib.h>
+#include <stdint.h>
+#include <stdbool.h>
 #include "readline.h"
 #include "internal.h"
 #include "libft.h"
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdbool.h>
 
 t_ft_rl_functions   g_ft_rl_functions = { 0, { { 0, 0 } } };
-
-char		*ft_rl_prompt_colour(t_ft_rl_prompt_colour colour)
-{
-	if (colour == RL_BLUE)
-		return (CSI "38;5;32m");
-	if (colour == RL_ORANGE)
-		return (CSI "38;5;208m");
-	return (CSI "38;5;196m");
-}
 
 bool		ft_rl_bind_key(char key, t_ft_rl_func func)
 {
@@ -75,7 +63,7 @@ t_string    ft_readline(char *prompt, t_ft_rl_prompt_colour colour)
 	reset = true;
 	init_ft_rl_reader_string(&reader, &string);
 	ft_bzero(characters, sizeof(characters));
-	ft_putf_fd(STDERR_FILENO, "%s%s $ " COLOUR_RESET, rl.colour, rl.prompt);
+	ft_putf_fd(2, "%s%s $ " COLOUR_RESET, rl.colour, rl.prompt);
 	while (42)
 	{
 		if (ft_rl_internal_checks())
@@ -86,7 +74,8 @@ t_string    ft_readline(char *prompt, t_ft_rl_prompt_colour colour)
 		{
 			if (ft_rl_call_bound_functions(characters[1], (t_readline *)&rl, &string) == -1)
 				return (string);
-			ft_rl_handle_character((t_readline *)&rl, &reader, &string, characters);
+			if (!ft_rl_handle_character((t_readline *)&rl, &reader, &string, characters))
+				break ;
 			if ((*characters = characters[1]) == 0x3 || *characters == 0xd || *characters == 0xA)
 			{
 				if (*characters == 0x3)
@@ -102,21 +91,29 @@ t_string    ft_readline(char *prompt, t_ft_rl_prompt_colour colour)
 	return (string);
 }
 
-bool        ft_rl_handle_character(t_readline *rl, t_ft_rl_reader *reader, t_string *string, char characters[2])
+static bool	ft_rl_handle_escaped_chars(t_readline *rl, t_ft_rl_reader *reader, t_string *string)
 {
-	char    next_c;
+	char	next_c;
 
-	if (characters[1] == 0x1b && ft_rl_getchar_blocking(reader, 0, &next_c) != -1 && next_c == '[')
+	next_c = '\0';
+	if (ft_rl_getchar_blocking(reader, 0, &next_c) < 0 || next_c != '[')
+		return (next_c != '[');
+	if (ft_rl_getchar_blocking(reader, 0, &next_c) == -1)
+		return (false);
+	if (ft_isdigit(next_c))
 	{
-		if (ft_rl_getchar_blocking(reader, 0, &next_c) == -1)
+		if (ft_rl_getchar_blocking(reader, 0, &next_c) < 0)
 			return (false);
-		if (ft_isdigit(next_c))
-			ft_rl_getchar_blocking(reader, 0, &next_c);
-		else if (next_c == 'C' || next_c == 'D')
-			ft_rl_move_cursor(rl, string, JUMP_TO_N_CHAR, next_c == 'C' ? 1 : -1);
-		else if (next_c == 'A' || next_c == 'B')
-			;// vertical move, move in the history
 	}
+	else if (next_c == 'C' || next_c == 'D')
+		ft_rl_move_cursor(rl, string, JUMP_TO_N_CHAR, next_c == 'C' ? 1 : -1);
+	return (true);
+}
+
+bool		ft_rl_handle_character(t_readline *rl, t_ft_rl_reader *reader, t_string *string, char characters[2])
+{
+	if (characters[1] == 0x1b)
+		return (ft_rl_handle_escaped_chars(rl, reader, string));
 	else if (characters[1] == 0x7f || (characters[1] == 0x4 && rl->cursor < string->len))
 		ft_rl_delete_char(rl, string, characters[1] == 0x4 ? DELETE_CURR_CHAR : DELETE_PREV_CHAR);
 	else if (characters[1] == 0x5 || characters[1] == 0x1)
