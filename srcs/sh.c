@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 17:09:14 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/14 12:35:35 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/21 14:29:24 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/ioctl.h>
+#include <signal.h>
 #include "sh.h"
 #include "libft.h"
 #include "readline.h"
@@ -22,7 +23,7 @@
 static bool		exit_sh = false;
 static t_env	*g_env = NULL;
 
-bool		sh_exit(char c, t_readline *rl, t_string *line)
+static bool				sh_exit(char c, t_readline *rl, t_string *line)
 {
 	(void)rl;
 	(void)line;
@@ -31,7 +32,7 @@ bool		sh_exit(char c, t_readline *rl, t_string *line)
 	return (true);
 }
 
-t_completion		autocomplete_state(t_string *line, t_readline *rl)
+static t_completion		autocomplete_state(t_string *line, t_readline *rl)
 {
 	t_completion			completion;
 	size_t					i;
@@ -88,9 +89,20 @@ bool		sh_autocomplete(char c, t_readline *rl, t_string *line)
 	return (true);
 }
 
-bool		sh_setup_rl_bound_functions(void)
+static void	sighandler(int sig)
 {
-	return (ft_rl_bind_key(0x4, sh_exit) && ft_rl_bind_key('\t', sh_autocomplete));
+	if (sig == SIGINT)
+	{
+		kill(g_child_pid, SIGKILL);
+		ft_putchar('\n');
+	}
+}
+
+static void	setup_sighandlers(void)
+{
+	signal(SIGQUIT, sighandler);
+	signal(SIGINT, sighandler);
+	signal(SIGTSTP, sighandler);
 }
 
 int			main(int argc, char **argv, char **envp)
@@ -101,9 +113,11 @@ int			main(int argc, char **argv, char **envp)
 	int			status;
 	t_string	line;
 
-	status = 0;
 	ft_rl_config_termios(2);
-	sh_setup_rl_bound_functions();
+	setup_sighandlers();
+	ft_rl_bind_key(0x4, sh_exit);
+	ft_rl_bind_key('\t', sh_autocomplete);
+	status = 0;
 	while (!exit_sh)
 	{
 		g_env = (t_env *)&env;
@@ -122,5 +136,6 @@ int			main(int argc, char **argv, char **envp)
 		ft_free_string(&line);
 	}
 	ft_putf("exit\n");
+	destroy_env((t_env *)&env);
 	ft_rl_config_termios(0);
 }

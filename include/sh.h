@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 20:29:24 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/15 11:09:22 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/21 14:28:40 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,6 +124,7 @@ bool					destroy_lexer(const t_lexer *lexer);
 
 int						sh_exec(t_string *string, t_env *env);
 t_ast_node				sh_construct_ast(const t_lexer *lexer);
+bool					destroy_ast(t_ast_node root, const t_lexer *lexer);
 
 void					print_ast(t_ast_node root);
 
@@ -132,6 +133,7 @@ bool					put_env(t_env *env, const char *name, const char *value);
 void					print_env(const t_env *env);
 bool					unset_env(t_env *env, const char *name);
 t_string				get_env(t_env *env, const char *name);
+bool					destroy_env(t_env *env);
 
 char					*sh_complete_command(char *start, size_t len, char path[PATH_MAX], t_env *env);
 char					*sh_complete_filename(char *start, size_t len, char path[PATH_MAX], bool must_exec);
@@ -149,6 +151,7 @@ int						sh_builtin_echo(t_string *args, size_t len, t_env *env);
 int						sh_builtin_cd(t_string *args, size_t len, t_env *env);
 int						sh_builtin_which(t_string *args, size_t len, t_env *env);
 
-extern t_shell_builtin	sh_builtins[];
+extern t_shell_builtin	g_sh_builtins[];
+extern pid_t			g_child_pid;
 
 #endif

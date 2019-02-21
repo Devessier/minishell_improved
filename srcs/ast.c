@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/31 16:54:34 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/05 15:36:29 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/21 14:20:39 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,10 @@ t_ast_node	sh_construct_ast(const t_lexer *lexer)
 			if (args_index == 0)
 				init_ast_command(&command, &lexer->tokens[i].payload);
 			else if (!append_arg_to_root(&command, &lexer->tokens[i].payload))
-				; // malloc error
+			{
+				destroy_ast(root, lexer);
+				break ;
+			}
 			args_index++;
 		}
 		else if (command.payload.command.string.len > 0 && !command.payload.command.dirty)
@@ -123,4 +126,21 @@ t_ast_node	sh_construct_ast(const t_lexer *lexer)
 	if (command.payload.command.string.len > 0 && !command.payload.command.dirty)
 		append_command_to_root(&root, &command);
 	return (root);
+}
+
+bool		destroy_ast(t_ast_node root, const t_lexer *lexer)
+{
+	size_t		i;
+	t_ast_node	el;
+
+	i = 0;
+	while (i < root.payload.root.len)
+	{
+		el = root.payload.root.commands[i];
+		ft_free_string(&el.payload.command.string);
+		free(el.payload.command.args);
+		i++;
+	}
+	free(root.payload.root.commands);
+	return (destroy_lexer(lexer));
 }

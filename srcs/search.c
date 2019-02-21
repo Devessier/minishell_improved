@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/08 16:54:20 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/12 14:54:30 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/21 12:49:46 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,10 @@ static bool		search_builtin(char *start, size_t len, char path[PATH_MAX])
 	size_t	i;
 
 	i = 0;
-	while (sh_builtins[i].fn != NULL)
-		if (ft_strnstr(sh_builtins[i++].name, start, len) != NULL)
+	while (g_sh_builtins[i].fn != NULL)
+		if (ft_strnstr(g_sh_builtins[i++].name, start, len) != NULL)
 		{
-			ft_strcpy(path, sh_builtins[i - 1].name);
+			ft_strcpy(path, g_sh_builtins[i - 1].name);
 			return (true);
 		}
 	return (false);

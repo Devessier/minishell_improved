@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/15 09:34:03 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/15 11:31:38 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/21 14:16:27 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 #include <sys/syslimits.h>
 #include <sys/stat.h>
 
-t_shell_builtin					sh_builtins[] = {
+t_shell_builtin					g_sh_builtins[] = {
 	{ "env", sh_builtin_env },
 	{ "setenv", sh_builtin_setenv },
 	{ "unsetenv", sh_builtin_unsetenv },
@@ -27,13 +27,15 @@ t_shell_builtin					sh_builtins[] = {
 	{ NULL, NULL },
 };
 
+pid_t							g_child_pid;
+
 ssize_t							is_builtin(char *name)
 {
 	size_t	i;
 
 	i = 0;
-	while (sh_builtins[i++].name != NULL)
-		if (ft_strcmp(sh_builtins[i - 1].name, name) == 0)
+	while (g_sh_builtins[i++].name != NULL)
+		if (ft_strcmp(g_sh_builtins[i - 1].name, name) == 0)
 			return (i - 1);
 	return (-1);
 }
@@ -99,25 +101,25 @@ int								copy_args_env(char *buffer[ARG_MAX], char path[PATH_MAX], t_ast_node 
 	j = 0;
 	while (j < env->len)
 		buffer[i++] = env->vars[j++].buff;
-	buffer[i++] = NULL;
+	buffer[i] = NULL;
 	return (argc);
 }
 
 int								exec_xfile(char path[PATH_MAX], t_ast_node *command, t_env *env, int *status)
 {
-	char	*buffer[ARG_MAX];
+	char	*buffer[ARG_MAX / 8];
 	int		argc;
 	char	**envp;
-	pid_t	child_pid;
 
+	ft_bzero(buffer, sizeof(buffer) / sizeof(*buffer));
 	argc = copy_args_env(buffer, path, command, env);
 	envp = &buffer[argc + 1];
-	if ((child_pid = fork()) == 0 && execve(path, buffer, envp) == -1)
+	if ((g_child_pid = fork()) == 0 && execve(path, buffer, envp) == -1)
 		ft_putf("minishell: error occured during child fork: %s\n", path);
-	else if (child_pid < 0)
+	else if (g_child_pid < 0)
 		ft_putf("minishell: error occured during child fork: %s\n", path);
 	else
-		waitpid(child_pid, status, 0);
+		waitpid(g_child_pid, status, 0);
 	return (0);
 }
 
@@ -126,9 +128,9 @@ int								exec_builtin(t_string *name, t_ast_node *command, t_env *env)
 	size_t	i;
 
 	i = 0;
-	while (sh_builtins[i++].name != NULL)
-		if (ft_strcmp(sh_builtins[i - 1].name, name->buff) == 0)
-			return (sh_builtins[i - 1].fn(command->payload.command.args, command->payload.command.len, env));
+	while (g_sh_builtins[i++].name != NULL)
+		if (ft_strcmp(g_sh_builtins[i - 1].name, name->buff) == 0)
+			return (g_sh_builtins[i - 1].fn(command->payload.command.args, command->payload.command.len, env));
 	return (127);
 }
 
@@ -160,5 +162,6 @@ int								sh_exec(t_string *string, t_env *env)
 		else
 			status = result == LK_NOT_FOUND ? 127 : 126;
 	}
+	destroy_ast(root, &lexer);
 	return (status);
 }
