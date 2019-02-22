@@ -6,16 +6,19 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/24 10:46:02 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/22 14:01:43 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/22 16:25:34 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <sys/types.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <unistd.h>
 #include "readline.h"
 #include "internal.h"
 #include "libft.h"
+
+bool		g_must_print_prompt = false;
 
 static int	ft_readline_loop(t_readline *rl, t_string *line,
 		char characters[3], t_ft_rl_reader *reader)
@@ -25,7 +28,7 @@ static int	ft_readline_loop(t_readline *rl, t_string *line,
 
 	if (ft_rl_internal_checks())
 		reset = true;
-	if (line->buff != NULL)
+	if (line->buff != NULL && g_must_print_prompt)
 		ft_rl_display(rl, line, reset);
 	if ((getchar_result = ft_rl_getchar(reader, 0, characters + 1)) > 0)
 	{
@@ -55,22 +58,31 @@ t_string	ft_readline(char *prompt, t_ft_rl_prompt_colour colour)
 	t_string		line;
 	int				result;
 
+	g_must_print_prompt = isatty(0) && isatty(1);
 	rl = (t_readline) {
 		prompt,
 		ft_strlen(prompt) + 3,
 		ft_rl_prompt_colour(colour),
-		0
+		0,
+		false,
 	};
+	if (g_must_print_prompt)
+		write(1, CSI "6n", 4);
 	init_ft_rl_reader_string(&reader, &line);
 	ft_bzero(characters, sizeof(characters));
-	ft_putf_fd(2, "%s%s $ " COLOUR_RESET, rl.colour, rl.prompt);
 	while (42)
-		if ((result = ft_readline_loop((t_readline *)&rl,
+		if (rl.print_prompt && g_must_print_prompt)
+		{
+			ft_putf_fd(2, "%s%s $ " COLOUR_RESET, rl.colour, rl.prompt);
+			rl.print_prompt = false;
+		}
+		else if ((result = ft_readline_loop((t_readline *)&rl,
 			&line, characters, &reader)) == 2)
 			return (line);
 		else if (result == 1)
 			break ;
-	ft_putchar('\n');
+	if (g_must_print_prompt)
+		ft_putchar('\n');
 	return (line);
 }
 
@@ -78,19 +90,41 @@ static bool	ft_rl_handle_escaped_chars(t_readline *rl,
 		t_ft_rl_reader *reader, t_string *string)
 {
 	char	next_c;
+	size_t	i;
+	char	column[2];
+	int		status;
 
 	next_c = '\0';
+	i = 0;
 	if (ft_rl_getchar_blocking(reader, 0, &next_c) < 0 || next_c != '[')
 		return (next_c != '[');
 	if (ft_rl_getchar_blocking(reader, 0, &next_c) == -1)
 		return (false);
-	if (ft_isdigit(next_c))
+	while (i < 3 && ft_isdigit(next_c))
 	{
 		if (ft_rl_getchar_blocking(reader, 0, &next_c) < 0)
 			return (false);
+		i++;
 	}
-	else if (next_c == 'C' || next_c == 'D')
+	if (next_c == 'C' || next_c == 'D')
+	{
 		ft_rl_move_cursor(rl, string, JUMP_TO_N_CHAR, next_c == 'C' ? 1 : -1);
+		return (true);
+	}
+	if (next_c == ';')
+	{
+		while ((status = ft_rl_getchar_blocking(reader, 0, &next_c)) > 0 && ft_isdigit(next_c))
+			*column = next_c;
+		1[column] = '\0';
+		if (status < 0)
+			return (false);
+		else if (next_c == 'R')
+		{
+			if (ft_atoi(column) != 1)
+				ft_putstr_fd(CSI "330;107;m" "%\n" CSI "0m", 2);
+			rl->print_prompt = true;
+		}
+	}
 	return (true);
 }
 

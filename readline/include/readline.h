@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/24 10:39:07 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/15 17:17:53 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/22 16:11:23 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ typedef struct				s_readline
 	size_t		prompt_len;
 	char		*colour;
 	size_t		cursor;
+	bool		print_prompt;
 }							t_readline;
 
 /*
@@ -84,5 +85,6 @@ void						ft_rl_init(void);
 void						ft_rl_config_termios(int operation);
 
 extern t_ft_rl_functions	g_ft_rl_functions;
+extern bool					g_must_print_prompt;
 
 #endif
