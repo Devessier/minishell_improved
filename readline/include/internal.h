@@ -6,13 +6,12 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/24 13:26:29 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/21 16:57:50 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/22 13:55:53 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef INTERNAL_H
 # define INTERNAL_H
-# include <stdint.h>
 # include <stdbool.h>
 # include "readline.h"
 # define BELL 0x7
@@ -29,11 +28,13 @@ typedef enum	e_delete_type
 	DELETE_PREV_CHAR,
 }				t_delete_type;
 
-typedef struct winsize	t_winsize;
-
-void			init_ft_rl_reader_string(t_ft_rl_reader *reader, t_string *string);
+void			init_ft_rl_reader_string(t_ft_rl_reader *reader,
+		t_string *string);
+ssize_t			ft_rl_call_bound_functions(char c, t_readline *rl,
+		t_string *line);
 char			*ft_rl_prompt_colour(t_ft_rl_prompt_colour colour);
-int				ft_rl_getchar(t_ft_rl_reader *this, const int fd, char *c);
+int				ft_rl_getchar(t_ft_rl_reader *this, const int fd,
+		char *c);
 int				ft_rl_getchar_blocking(t_ft_rl_reader *this, const int fd,
 		char *c);
 void			ft_rl_display(t_readline *rl, t_string *line, bool reset);
