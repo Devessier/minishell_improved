@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 17:09:14 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/21 14:29:24 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/22 16:48:53 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ static void	sighandler(int sig)
 {
 	if (sig == SIGINT)
 	{
-		kill(g_child_pid, SIGKILL);
+		kill(g_child_pid, SIGINT);
 		ft_putchar('\n');
 	}
 }
@@ -135,7 +135,8 @@ int			main(int argc, char **argv, char **envp)
 			exit_sh = true;
 		ft_free_string(&line);
 	}
-	ft_putf("exit\n");
+	if (g_must_print_prompt)
+		ft_putf("exit\n");
 	destroy_env((t_env *)&env);
 	ft_rl_config_termios(0);
 }
