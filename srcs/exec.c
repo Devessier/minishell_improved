@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/15 09:34:03 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/21 14:16:27 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/23 15:20:26 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,7 +150,10 @@ int								sh_exec(t_string *string, t_env *env)
 	while (i++ < root.payload.root.len)
 	{
 		if ((result = sh_search_command(&root.payload.root.commands[i - 1].payload.command.string, env, path)) == LK_NOT_FOUND)
+		{
 			ft_putf("minishell: command not found: %s\n", root.payload.root.commands[i - 1].payload.command.string.buff);
+			status = 127;
+		}
 		else if (result == LK_NO_RIGHTS)
 			ft_putf("minishell: permission denied: %s\n", root.payload.root.commands[i - 1].payload.command.string.buff);
 		else if (result == LK_PATH_TOO_LONG)
@@ -159,8 +162,6 @@ int								sh_exec(t_string *string, t_env *env)
 			exec_xfile(path, &root.payload.root.commands[i - 1], env, &status);
 		else if (result == LK_BUILTIN)
 			status = exec_builtin(&root.payload.root.commands[i - 1].payload.command.string, &root.payload.root.commands[i - 1], env);
-		else
-			status = result == LK_NOT_FOUND ? 127 : 126;
 	}
 	destroy_ast(root, &lexer);
 	return (status);
