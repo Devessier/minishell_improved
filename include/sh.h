@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 20:29:24 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/21 14:28:40 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/25 13:18:23 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include <stdbool.h>
 # include <sys/syslimits.h>
 # include "libft.h"
+# define PROMPT_START "Minishell Improved"
 
 typedef enum			e_token_char
 {
@@ -135,6 +136,7 @@ bool					unset_env(t_env *env, const char *name);
 t_string				get_env(t_env *env, const char *name);
 bool					destroy_env(t_env *env);
 
+char					*sh_prompt(size_t *prompt_len);
 char					*sh_complete_command(char *start, size_t len, char path[PATH_MAX], t_env *env);
 char					*sh_complete_filename(char *start, size_t len, char path[PATH_MAX], bool must_exec);
 

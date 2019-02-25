@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 17:09:14 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/22 16:48:53 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/25 13:15:42 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,6 +112,7 @@ int			main(int argc, char **argv, char **envp)
 	const t_env	env = copy_env(envp);
 	int			status;
 	t_string	line;
+	size_t		prompt_len;
 
 	ft_rl_config_termios(2);
 	setup_sighandlers();
@@ -122,7 +123,7 @@ int			main(int argc, char **argv, char **envp)
 	{
 		g_env = (t_env *)&env;
 		ft_rl_init();
-		line = ft_readline("Minishell Improved", status == 0 ? RL_BLUE : RL_RED);
+		line = ft_readline(sh_prompt(&prompt_len), prompt_len, status == 0 ? RL_BLUE : RL_RED);
 		if (line.len > 0)
 		{
 			ft_rl_config_termios(0);

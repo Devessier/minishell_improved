@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/24 10:39:07 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/22 16:11:23 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/25 13:14:46 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ typedef struct				s_ft_rl_functions
 	t_fl_rl_func_entry	functions[FT_RL_MAX_FUNC];
 }							t_ft_rl_functions;
 
-t_string					ft_readline(char *prompt,
+t_string					ft_readline(char *prompt, size_t prompt_len,
 		t_ft_rl_prompt_colour colour);
 
 void						ft_rl_move_cursor(t_readline *rl, t_string *string,
