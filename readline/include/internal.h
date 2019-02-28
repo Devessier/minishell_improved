@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/24 13:26:29 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/22 16:11:06 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/25 14:53:32 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 # include <stdbool.h>
 # include "readline.h"
 # define BELL 0x7
+# define EURO "\xE2\x82\xAC"
 
 typedef enum	e_terminal_size_operation
 {
