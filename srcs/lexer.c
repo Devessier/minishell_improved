@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/15 09:30:25 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/15 10:51:14 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/28 16:48:41 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,6 @@ static const t_oken_char	g_tokens[1 << 7] = {
 	['|'] = T_PIPE,
 };
 
-static char					shell_pid[10] = { 0 };
-static size_t				shell_pid_len = 0;
 
 void						init_token(t_oken *tok)
 {
@@ -161,125 +159,7 @@ bool						lexer_algorithm(t_lexer *lexer, uint8_t *str)
 	return (true);
 }
 
-bool						expand_tildes(t_string *token, t_env *env)
-{
-	char			home_dir[PATH_MAX];
-	t_string		home;
-	struct passwd	*passwd;
-	size_t			i;
-	char			*str;
 
-	str = token->buff + 1;
-	i = 0;
-	while (*str != '\0' && *str != '/')
-		home_dir[i++] = *str++;
-	home_dir[i] = '\0';
-	if (*home_dir == '\0')
-	{
-		if (!((home = get_env(env, "HOME")).len > 0))
-		{
-
-			if (!(passwd = getpwnam(getlogin())) || passwd->pw_dir == NULL)
-				return (false);
-			ft_strcpy(home_dir, passwd->pw_dir);
-		}
-		else
-			ft_strcpy(home_dir, home.buff);
-	}
-	else if ((passwd = getpwnam(home_dir)) != NULL && passwd->pw_dir != NULL)
-		ft_strcpy(home_dir, passwd->pw_dir);
-	else
-		return (false);
-	ft_strcat(home_dir, str);
-	if (!ft_extend_string(token, ft_strlen(home_dir)))
-		return (false);
-	ft_strcpy(token->buff, home_dir);
-	return (true);
-}
-
-
-size_t						append_token_env_var(t_oken *tok, char *str, t_env *env)
-{
-	size_t		i;
-	t_string	env_var;
-	char		*tmp;
-	char		old;
-
-	++str;
-	if (*str == '$')
-	{
-		if (*shell_pid == '\0')
-			ft_itoa_buff(getpid(), shell_pid);
-		ft_concat_strings(&tok->payload, shell_pid, ft_strlen(shell_pid));
-		return (1);
-	}
-	if (*str == '0')
-		if (!ft_concat_strings(&tok->payload, "minishell", 9))
-			; // malloc error
-	if (!(*str == '_' || ft_isalpha(*str)))
-		return (1);
-	i = 0;
-	while (i[str] && (ft_isalnum(i[str]) || i[str] == '_'))
-		i++;
-	old = str[i];
-	str[i] = '\0';
-	if (i > 0 && (env_var = get_env(env, str)).len > 0 && env_var.buff != NULL)
-	{
-		tmp = ft_strchr(env_var.buff, '=');
-		ft_concat_strings(&tok->payload, tmp + 1, env_var.len - (tmp - env_var.buff) - 1);
-	}
-	str[i] = old;
-	return (i);
-}
-
-bool						expand_dollars(t_string *token, t_env *env)
-{
-	char		env_name[4096];
-	t_string	dollar;
-	size_t		i;
-	size_t		j;
-
-	i = 0;
-	while (i < token->len && token->buff[i])
-	{
-		if (token->buff[i] == '$')
-		{
-			if (token->buff[++i] == '$')
-			{
-				if (shell_pid_len > 2 && !ft_extend_string(token, shell_pid_len - 2))
-					return (false);
-				ft_memmove(token->buff + i + shell_pid_len - 1, token->buff + i + 1, token->len - i - 1);
-				ft_memmove(token->buff + i - 1, shell_pid, shell_pid_len);
-				token->len += shell_pid_len - 2;
-			}
-			else if (token->buff[i] == '_' || ft_isalpha(token->buff[i]))
-			{
-				j = 0;
-				while (i < token->len && (ft_isalnum(token->buff[i]) || token->buff[i] == '_'))
-					env_name[j++] = token->buff[i++];
-				env_name[j] = '\0';
-				if (*env_name != '\0' && (dollar = get_env(env, env_name)).len > 0)
-				{
-					if (!ft_extend_string(token, dollar.len - j - 1))
-						return (false);
-					ft_memmove(token->buff + i - j + dollar.len - 1, token->buff + i, token->len - i);
-					ft_memmove(token->buff + i - j - 1, dollar.buff, dollar.len);
-					token->len += dollar.len - j - 1;
-				}
-				else
-				{
-					ft_memmove(token->buff + i - j - 1, token->buff + i, token->len - i);
-					token->len -= j + 1;
-					i -= j + 1;
-					token->buff[token->len] = '\0';
-				}
-				continue ;
-			}
-		}
-		i++;
-	}
-	return (true);
-}
 
 bool						destroy_lexer(const t_lexer *lexer)
 {
@@ -300,9 +180,9 @@ t_lexer						sh_lexer(t_string *string, t_env *env)
 	init_lexer(&lexer);
 	if (!lexer_algorithm(&lexer, (uint8_t *)string->buff))
 		; //error
-	if (*shell_pid == '\0')
-		ft_itoa_buff(getpid(), shell_pid);
-	shell_pid_len = ft_strlen(shell_pid);
+	if (*g_shell_pid == '\0')
+		ft_itoa_buff(getpid(), g_shell_pid);
+	g_shell_pid_len = ft_strlen(g_shell_pid);
 	i = 0;
 	while (i++ < lexer.len)
 	{

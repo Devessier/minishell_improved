@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/15 09:34:03 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/23 15:20:26 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/25 14:59:20 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,6 +111,8 @@ int								exec_xfile(char path[PATH_MAX], t_ast_node *command, t_env *env, int 
 	int		argc;
 	char	**envp;
 
+	/*if (access(path, X_OK) == -1)
+		return ((*status = 126) & 0);*/
 	ft_bzero(buffer, sizeof(buffer) / sizeof(*buffer));
 	argc = copy_args_env(buffer, path, command, env);
 	envp = &buffer[argc + 1];

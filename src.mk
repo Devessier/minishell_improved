@@ -1,6 +1,8 @@
+SRCS += srcs/autocomplete.c
 SRCS += srcs/sh.c
 SRCS += srcs/prompt.c
 SRCS += srcs/exec.c
+SRCS += srcs/expansion.c
 SRCS += srcs/lexer.c
 SRCS += srcs/env.c
 SRCS += srcs/ast.c

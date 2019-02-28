@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 20:29:24 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/25 14:53:34 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/02/28 16:55:16 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,33 @@
 # include <stdbool.h>
 # include <sys/syslimits.h>
 # include "libft.h"
+# include "readline.h"
 # define PROMPT_START "Minishell Improved"
+# define BELL 0x7
+
+/*
+** -- Environment variables --
+*/
+
+typedef struct			s_env
+{
+	size_t		len;
+	size_t		cap;
+	t_string	*vars;
+}						t_env;
+
+t_env					copy_env(char **envp);
+bool					put_env(t_env *env, const char *name,
+	const char *value);
+void					print_env(const t_env *env);
+bool					unset_env(t_env *env, const char *name);
+t_string				get_env(t_env *env, const char *name);
+bool					destroy_env(t_env *env);
+
+
+/*
+** -- Lexer --
+*/
 
 typedef enum			e_token_char
 {
@@ -53,35 +79,66 @@ typedef struct			s_lexer
 	t_oken			*tokens;
 }						t_lexer;
 
+
+bool					expand_tildes(t_string *token, t_env *env);
+bool					expand_dollars(t_string *token, t_env *env);
+
+t_lexer					sh_lexer(t_string *string, t_env *env);
+bool					destroy_lexer(const t_lexer *lexer);
+
+/*
+** -- AST --
+*/
+
 typedef struct			s_ast_node
 {
-	enum			{
+	enum	{
 		ROOT,
 		COMMAND,
 		ARG
-	}				tag;
-	union			{
-		struct		{
+	}		tag;
+	union	{
+		struct	{
 			size_t				len;
 			size_t				cap;
 			struct s_ast_node	*commands;
-		}			root;
-		struct		{
-			t_string			string;
-			size_t				len;
-			size_t				cap;
-			t_string			*args;
-			bool				dirty;
-		}			command;
-	}				payload;
+		}		root;
+		struct	{
+			t_string	string;
+			size_t		len;
+			size_t		cap;
+			t_string	*args;
+			bool		dirty;
+		}		command;
+	}		payload;
 }						t_ast_node;
 
-typedef struct			s_env
+
+t_ast_node				sh_construct_ast(const t_lexer *lexer);
+bool					destroy_ast(t_ast_node root, const t_lexer *lexer);
+
+void					print_ast(t_ast_node root);
+
+/*
+** -- Execution --
+*/
+
+typedef enum			e_lookup_result
 {
-	size_t		len;
-	size_t		cap;
-	t_string	*vars;
-}						t_env;
+	LK_NOT_FOUND,
+	LK_BUILTIN,
+	LK_FOUND,
+	LK_NO_RIGHTS,
+	LK_PATH_TOO_LONG,
+}						t_lookup_result;
+
+
+int						sh_exec(t_string *string, t_env *env);
+
+
+/*
+** -- Prompt --
+*/
 
 typedef enum			e_color
 {
@@ -90,22 +147,12 @@ typedef enum			e_color
 	ORANGE
 }						t_color;
 
-typedef int				(*t_shell_builtin_fn)(t_string *, size_t, t_env *);
 
-typedef struct			s_shell_builtin
-{
-	char				*name;
-	t_shell_builtin_fn	fn;
-}						t_shell_builtin;
+char					*sh_prompt(size_t *prompt_len);
 
-typedef enum			s_lookup_result
-{
-	LK_NOT_FOUND,
-	LK_BUILTIN,
-	LK_FOUND,
-	LK_NO_RIGHTS,
-	LK_PATH_TOO_LONG,
-}						t_lookup_result;
+/*
+** -- Autocompletion --
+*/
 
 enum					e_autocomplete_state
 {
@@ -120,40 +167,50 @@ typedef struct			s_completion
 	char						*start;
 }						t_completion;
 
-t_lexer					sh_lexer(t_string *string, t_env *env);
-bool					destroy_lexer(const t_lexer *lexer);
 
-int						sh_exec(t_string *string, t_env *env);
-t_ast_node				sh_construct_ast(const t_lexer *lexer);
-bool					destroy_ast(t_ast_node root, const t_lexer *lexer);
+bool					sh_autocomplete(char c, t_readline *rl,
+	t_string *line);
+char					*sh_complete_command(char *start, size_t len,
+	char path[PATH_MAX], t_env *env);
+char					*sh_complete_filename(char *start, size_t len,
+	char path[PATH_MAX], bool must_exec);
 
-void					print_ast(t_ast_node root);
-
-t_env					copy_env(char **envp);
-bool					put_env(t_env *env, const char *name, const char *value);
-void					print_env(const t_env *env);
-bool					unset_env(t_env *env, const char *name);
-t_string				get_env(t_env *env, const char *name);
-bool					destroy_env(t_env *env);
-
-char					*sh_prompt(size_t *prompt_len);
-char					*sh_complete_command(char *start, size_t len, char path[PATH_MAX], t_env *env);
-char					*sh_complete_filename(char *start, size_t len, char path[PATH_MAX], bool must_exec);
-
-t_lookup_result			sh_search_command(t_string *name, t_env *env, char path[PATH_MAX]);
+t_lookup_result			sh_search_command(t_string *name, t_env *env,
+	char path[PATH_MAX]);
 
 /*
-** Shell builtins : mandatory and optional (bonus)
+**  -- Shell builtins : mandatory and optional (bonus) --
 */
 
-int						sh_builtin_env(t_string *args, size_t len, t_env *env);
-int						sh_builtin_setenv(t_string *args, size_t len, t_env *env);
-int				 		sh_builtin_unsetenv(t_string *args, size_t len, t_env *env);
-int						sh_builtin_echo(t_string *args, size_t len, t_env *env);
-int						sh_builtin_cd(t_string *args, size_t len, t_env *env);
-int						sh_builtin_which(t_string *args, size_t len, t_env *env);
+typedef int				(*t_shell_builtin_fn)(t_string *, size_t, t_env *);
 
+typedef struct			s_shell_builtin
+{
+	char				*name;
+	t_shell_builtin_fn	fn;
+}						t_shell_builtin;
+
+int						sh_builtin_env(t_string *args, size_t len,
+	t_env *env);
+int						sh_builtin_setenv(t_string *args, size_t len,
+	t_env *env);
+int						sh_builtin_unsetenv(t_string *args, size_t len,
+	t_env *env);
+int						sh_builtin_echo(t_string *args, size_t len,
+	t_env *env);
+int						sh_builtin_cd(t_string *args, size_t len,
+	t_env *env);
+int						sh_builtin_which(t_string *args, size_t len,
+	t_env *env);
+
+/*
+** -- Global variables : necessary --
+*/
+
+extern t_env			*g_env;
 extern t_shell_builtin	g_sh_builtins[];
 extern pid_t			g_child_pid;
+extern char				g_shell_pid[];
+extern size_t			g_shell_pid_len;
 
 #endif

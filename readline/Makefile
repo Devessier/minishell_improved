@@ -6,14 +6,14 @@
 #    By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/01/24 11:27:35 by bdevessi          #+#    #+#              #
-#    Updated: 2019/02/22 13:34:48 by bdevessi         ###   ########.fr        #
+#    Updated: 2019/02/28 17:40:53 by bdevessi         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = readline.a
 
 CFLAGS = -Wall -Wextra -Werror -Iinclude -I../libft/includes -g
-CC = gcc 
+CC = clang
 
 RM = rm -f
 
