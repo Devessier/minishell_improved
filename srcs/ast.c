@@ -6,48 +6,12 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/31 16:54:34 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/28 16:04:03 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/03/01 16:02:53 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sh.h"
 #include <stdbool.h>
-
-void		init_ast_root(t_ast_node *root)
-{
-	*root = (t_ast_node) {
-		.tag = ROOT,
-		.payload = {
-			.root = {
-				.cap = 0,
-				.len = 0,
-				.commands = NULL
-			}
-		}
-	};
-}
-
-bool		init_ast_command(t_ast_node *command, t_string *string)
-{
-	*command = (t_ast_node) {
-		.tag = COMMAND,
-		.payload = {
-			.command = {
-				.string = { 0, 0, NULL },
-				.len = 0,
-				.cap = 0,
-				.args = NULL,
-				.dirty = false,
-			},
-		},
-	};
-	if (string != NULL)
-	{
-		command->payload.command.string = ft_new_string(string->buff, false);
-		return (command->payload.command.string.buff != NULL);
-	}
-	return (true);
-}
 
 bool		append_command_to_root(t_ast_node *root, t_ast_node *command)
 {
@@ -96,54 +60,46 @@ bool		append_arg_to_root(t_ast_node *command, t_string *arg)
 	return (true);
 }
 
+bool		ast_loop(const t_lexer *lexer, t_ast_node *root,
+	t_ast_node *command)
+{
+	ssize_t	i;
+	size_t	args_index;
+
+	i = -1;
+	args_index = 0;
+	while (++i < (ssize_t)lexer->len)
+		if (lexer->tokens[i].type != T_SEMICOLON)
+		{
+			if (args_index == 0)
+				init_ast_command(command, &lexer->tokens[i].payload);
+			else if (!append_arg_to_root(command, &lexer->tokens[i].payload))
+				return (false);
+			args_index++;
+		}
+		else if ((*command).payload.command.string.len > 0
+				&& !(*command).payload.command.dirty)
+		{
+			append_command_to_root(root, command);
+			args_index = 0;
+		}
+	return (true);
+}
+
 t_ast_node	sh_construct_ast(const t_lexer *lexer)
 {
 	t_ast_node	root;
 	t_ast_node	command;
-	ssize_t		i;
-	size_t		args_index;
 
 	init_ast_root(&root);
 	init_ast_command(&command, NULL);
-	i = -1;
-	args_index = 0;
-	while (++i < (ssize_t)lexer->len)
+	if (!ast_loop(lexer, &root, &command))
 	{
-		if (lexer->tokens[i].type != T_SEMICOLON)
-		{
-			if (args_index == 0)
-				init_ast_command(&command, &lexer->tokens[i].payload);
-			else if (!append_arg_to_root(&command, &lexer->tokens[i].payload))
-			{
-				destroy_ast(root, lexer);
-				break ;
-			}
-			args_index++;
-		}
-		else if (command.payload.command.string.len > 0 && !command.payload.command.dirty)
-		{
-			append_command_to_root(&root, &command);
-			args_index = 0;
-		}
+		destroy_ast(root, lexer);
+		return ((t_ast_node) { ROOT, { { 0, 0, NULL } } });
 	}
-	if (command.payload.command.string.len > 0 && !command.payload.command.dirty)
+	if (command.payload.command.string.len > 0
+			&& !command.payload.command.dirty)
 		append_command_to_root(&root, &command);
 	return (root);
-}
-
-bool		destroy_ast(t_ast_node root, const t_lexer *lexer)
-{
-	size_t		i;
-	t_ast_node	el;
-
-	i = 0;
-	while (i < root.payload.root.len)
-	{
-		el = root.payload.root.commands[i];
-		ft_free_string(&el.payload.command.string);
-		free(el.payload.command.args);
-		i++;
-	}
-	free(root.payload.root.commands);
-	return (destroy_lexer(lexer));
 }

@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/15 09:34:03 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/03/01 11:17:13 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/03/01 16:08:03 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,9 +145,10 @@ int								sh_exec(t_string *string, t_env *env)
 	t_lookup_result	result;
 	int				status;
 
+	if (lexer.len == 0 || (root = sh_construct_ast(&lexer)).payload.root.len == 0)
+		return (1);
 	if (lexer.state != GLOBAL_SCOPE)
 		return (ft_putf("minishell: syntax error: %s\n", string->buff), 126);
-	root = sh_construct_ast(&lexer);
 	i = 0;
 	while (i++ < root.payload.root.len)
 	{

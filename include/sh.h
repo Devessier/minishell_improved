@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 20:29:24 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/03/01 11:22:39 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/03/01 18:52:32 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,12 +73,19 @@ typedef enum			e_lexer_state
 
 typedef struct			s_lexer
 {
+	size_t			index;
 	size_t			len;
 	size_t			cap;
 	t_lexer_state	state;
 	t_oken			*tokens;
 }						t_lexer;
 
+typedef int				(*lexer_algo_fn)(t_lexer *, uint8_t *, t_oken_char[2], t_oken *);
+
+void					init_token(t_oken *tok);
+void					init_lexer(t_lexer *lexer);
+bool					append_token(t_lexer *this, t_oken token);
+bool					destroy_lexer(const t_lexer *lexer);
 
 bool					expand_tildes(t_string *token, t_env *env);
 bool					expand_dollars(t_string *token, t_env *env);
@@ -113,9 +120,11 @@ typedef struct			s_ast_node
 	}		payload;
 }						t_ast_node;
 
+void					init_ast_root(t_ast_node *root);
+bool					init_ast_command(t_ast_node *command, t_string *string);
+bool					destroy_ast(t_ast_node root, const t_lexer *lexer);
 
 t_ast_node				sh_construct_ast(const t_lexer *lexer);
-bool					destroy_ast(t_ast_node root, const t_lexer *lexer);
 
 void					print_ast(t_ast_node root);
 
@@ -132,7 +141,6 @@ typedef enum			e_lookup_result
 	LK_PATH_TOO_LONG,
 }						t_lookup_result;
 
-
 int						sh_exec(t_string *string, t_env *env);
 
 
@@ -146,7 +154,6 @@ typedef enum			e_color
 	RED,
 	ORANGE
 }						t_color;
-
 
 char					*sh_prompt(size_t *prompt_len);
 
