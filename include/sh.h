@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 20:29:24 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/03/01 18:52:32 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/03/01 18:57:19 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,6 @@ void					print_env(const t_env *env);
 bool					unset_env(t_env *env, const char *name);
 t_string				get_env(t_env *env, const char *name, size_t len);
 bool					destroy_env(t_env *env);
-
 
 /*
 ** -- Lexer --
@@ -80,7 +79,8 @@ typedef struct			s_lexer
 	t_oken			*tokens;
 }						t_lexer;
 
-typedef int				(*lexer_algo_fn)(t_lexer *, uint8_t *, t_oken_char[2], t_oken *);
+typedef int				(*t_lexer_algo_fn)(t_lexer *,
+	uint8_t *, t_oken_char[2], t_oken *);
 
 void					init_token(t_oken *tok);
 void					init_lexer(t_lexer *lexer);
@@ -143,7 +143,6 @@ typedef enum			e_lookup_result
 
 int						sh_exec(t_string *string, t_env *env);
 
-
 /*
 ** -- Prompt --
 */
@@ -173,7 +172,6 @@ typedef struct			s_completion
 	size_t						len;
 	char						*start;
 }						t_completion;
-
 
 bool					sh_autocomplete(char c, t_readline *rl,
 	t_string *line);

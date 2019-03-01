@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/15 09:34:03 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/03/01 16:08:03 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/03/01 19:01:41 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,8 @@ ssize_t							is_builtin(char *name)
 	return (-1);
 }
 
-t_lookup_result					lookup_path(char *name, char *path_env_var, char path[PATH_MAX])
+t_lookup_result					lookup_path(char *name, char *path_env_var,
+	char path[PATH_MAX])
 {
 	struct stat	stats;
 	size_t		name_len;
@@ -67,7 +68,8 @@ t_lookup_result					lookup_path(char *name, char *path_env_var, char path[PATH_M
 	return (LK_NOT_FOUND);
 }
 
-t_lookup_result					sh_search_command(t_string *name, t_env *env, char path[PATH_MAX])
+t_lookup_result					sh_search_command(t_string *name,
+	t_env *env, char path[PATH_MAX])
 {
 	const t_string	path_env_var = get_env(env, "PATH", 4);
 	const bool		contains_slash = ft_strchr(name->buff, '/') != NULL;
@@ -77,7 +79,8 @@ t_lookup_result					sh_search_command(t_string *name, t_env *env, char path[PATH
 	{
 		if (lstat(ft_strcpy(path, name->buff), &stats) != 0)
 			return (LK_NOT_FOUND);
-		return (((stats.st_mode & S_IFREG) && (stats.st_mode & S_IXUSR)) ? LK_FOUND : LK_NO_RIGHTS);
+		return (((stats.st_mode & S_IFREG)
+			&& (stats.st_mode & S_IXUSR)) ? LK_FOUND : LK_NO_RIGHTS);
 	}
 	else if (is_builtin(name->buff) != -1)
 		return (LK_BUILTIN);
@@ -86,7 +89,8 @@ t_lookup_result					sh_search_command(t_string *name, t_env *env, char path[PATH
 	return (lookup_path(name->buff, path_env_var.buff, path));
 }
 
-int								copy_args_env(char *buffer[ARG_MAX], char path[PATH_MAX], t_ast_node *command, t_env *env)
+int								copy_args_env(char *buffer[ARG_MAX],
+	char path[PATH_MAX], t_ast_node *command, t_env *env)
 {
 	int		argc;
 	size_t	i;
@@ -105,14 +109,13 @@ int								copy_args_env(char *buffer[ARG_MAX], char path[PATH_MAX], t_ast_node 
 	return (argc);
 }
 
-int								exec_xfile(char path[PATH_MAX], t_ast_node *command, t_env *env, int *status)
+int								exec_xfile(char path[PATH_MAX],
+	t_ast_node *command, t_env *env, int *status)
 {
 	char	*buffer[ARG_MAX / 8];
 	int		argc;
 	char	**envp;
 
-	/*if (access(path, X_OK) == -1)
-		return ((*status = 126) & 0);*/
 	ft_bzero(buffer, sizeof(buffer) / sizeof(*buffer));
 	argc = copy_args_env(buffer, path, command, env);
 	envp = &buffer[argc + 1];
@@ -125,14 +128,18 @@ int								exec_xfile(char path[PATH_MAX], t_ast_node *command, t_env *env, int 
 	return (0);
 }
 
-int								exec_builtin(t_string *name, t_ast_node *command, t_env *env)
+int								exec_builtin(t_string *name,
+	t_ast_node *command, t_env *env)
 {
 	size_t	i;
 
 	i = 0;
 	while (g_sh_builtins[i++].name != NULL)
 		if (ft_strcmp(g_sh_builtins[i - 1].name, name->buff) == 0)
-			return (g_sh_builtins[i - 1].fn(command->payload.command.args, command->payload.command.len, env));
+		{
+			return (g_sh_builtins[i - 1].fn(command->payload.command.args,
+				command->payload.command.len, env));
+		}
 	return (127);
 }
 
@@ -145,10 +152,14 @@ int								sh_exec(t_string *string, t_env *env)
 	t_lookup_result	result;
 	int				status;
 
-	if (lexer.len == 0 || (root = sh_construct_ast(&lexer)).payload.root.len == 0)
+	if (lexer.len == 0
+		|| (root = sh_construct_ast(&lexer)).payload.root.len == 0)
 		return (1);
 	if (lexer.state != GLOBAL_SCOPE)
-		return (ft_putf("minishell: syntax error: %s\n", string->buff), 126);
+	{
+		ft_putf("minishell: syntax error: %s\n", string->buff);
+		return (126);
+	}
 	i = 0;
 	while (i++ < root.payload.root.len)
 	{
