@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/17 16:01:02 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/03/01 18:21:54 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/03/01 18:54:40 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include "libft.h"
 #include <stdbool.h>
 
-t_env	copy_env(char **envp)
+t_env		copy_env(char **envp)
 {
 	t_env		env;
 	size_t		cap;
@@ -35,7 +35,7 @@ t_env	copy_env(char **envp)
 	return (env);
 }
 
-void	print_env(const t_env *env)
+void		print_env(const t_env *env)
 {
 	size_t	i;
 
@@ -51,14 +51,17 @@ t_string	get_env(t_env *env, const char *name, size_t len)
 
 	i = 0;
 	while (i++ < env->len)
+	{
 		if (ft_strncmp(env->vars[i - 1].buff, name, len) == 0
 				&& (equal = ft_strchr(env->vars[i - 1].buff, '=')) != NULL
 				&& (equal - env->vars[i - 1].buff) == (long)len)
 			return ((t_string) {
-				.len = env->vars[i - 1].len - (equal - env->vars[i - 1].buff) - 1,
+				.len = env->vars[i - 1].len
+					- (equal - env->vars[i - 1].buff) - 1,
 				.cap = env->vars[i - 1].cap,
 				.buff = equal + 1,
 			});
+	}
 	return ((t_string) { 0, 0, NULL });
 }
 
