@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/25 11:44:24 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/25 13:46:38 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/03/01 11:17:54 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ static int		change_directory(char *new, char *current, t_env *env)
 
 static int		cd_hyphen(t_env *env, t_string *string)
 {
-	if ((*string = get_env(env, "OLDPWD")).len == 0)
+	if ((*string = get_env(env, "OLDPWD", 6)).len == 0)
 	{
 		ft_putstr("minishell: cd: OLDPWD not set\n");
 		return (127);
@@ -82,7 +82,7 @@ int				sh_builtin_cd(t_string *args, size_t len, t_env *env)
 	char			*src;
 
 	src = NULL;
-	if (len == 0 && (string = get_env(env, "HOME")).len == 0)
+	if (len == 0 && (string = get_env(env, "HOME", 4)).len == 0)
 		return (0);
 	else if (len > 0 && *args[0].buff == '-' && args[0].buff[1] == '\0')
 	{

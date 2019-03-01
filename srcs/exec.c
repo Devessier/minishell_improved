@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/15 09:34:03 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/25 14:59:20 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/03/01 11:17:13 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ t_lookup_result					lookup_path(char *name, char *path_env_var, char path[PATH_M
 
 t_lookup_result					sh_search_command(t_string *name, t_env *env, char path[PATH_MAX])
 {
-	const t_string	path_env_var = get_env(env, "PATH");
+	const t_string	path_env_var = get_env(env, "PATH", 4);
 	const bool		contains_slash = ft_strchr(name->buff, '/') != NULL;
 	struct stat		stats;
 

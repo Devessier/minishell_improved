@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/28 16:14:37 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/28 18:44:05 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/03/01 13:27:31 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ bool						expand_tildes(t_string *token, t_env *env)
 	home_dir[i] = '\0';
 	if (*home_dir == '\0')
 	{
-		if (!((home = get_env(env, "HOME")).len > 0))
+		if (!((home = get_env(env, "HOME", 4)).len > 0))
 		{
 
 			if (!(passwd = getpwnam(getlogin())) || passwd->pw_dir == NULL)
@@ -62,50 +62,27 @@ static bool					copy_shell_pid(t_string *token, size_t i)
 	return (true);
 }
 
-static bool					check_token_too_long(t_string *token, size_t j, size_t i, size_t max)
-{
-	if (i < max)
-		return (false);
-	ft_putf("mooove\n");
-	ft_putf("i = %d, j = %d\n, len = %d", i, j, token->len);
-	while (i < token->len && (ft_isalnum(token->buff[i]) || token->buff[i] == '_'))
-	{
-		i++;
-		j++;
-	}
-	ft_putf("i = %d, j = %d\n", i, j);
-	ft_memmove(token->buff + i - j - 1, token->buff + i, token->len - i);
-	token->len -= j + 1;
-	i -= j + 1;
-	token->buff[token->len] = '\0';
-	return (true);
-}
-
 static bool					copy_env_var(t_string *token, size_t *i, t_env *env)
 {
-	char		env_name[4096];
-	size_t		j;
-	t_string	dollar;
+	const size_t	start = *i;
+	t_string		dollar;
 
-	j = 0;
-	while (*i < token->len && *i < sizeof(env_name) && (ft_isalnum(token->buff[*i]) || token->buff[*i] == '_'))
-		env_name[j++] = token->buff[(*i)++];
-	if (!check_token_too_long(token, j, *i, sizeof(env_name)))
-		return (true);
-	env_name[j] = '\0';
-	if (*env_name != '\0' && (dollar = get_env(env, env_name)).len > 0)
+	while (*i < token->len && (ft_isalnum(token->buff[*i]) || token->buff[*i] == '_'))
+		(*i)++;
+	if (start != *i && (dollar = get_env(env, token->buff + start, *i - start)).len > 0)
 	{
-		if (!ft_extend_string(token, dollar.len - j - 1))
+		if (!ft_extend_string(token, dollar.len))
 			return (false);
-		ft_memmove(token->buff + *i - j + dollar.len - 1, token->buff + *i, token->len - *i + 1);
-		ft_memmove(token->buff + *i - j - 1, dollar.buff, dollar.len);
-		token->len += dollar.len - j - 1;
+		ft_memmove(token->buff + start - 1 + dollar.len, token->buff + *i, token->len - *i);
+		ft_memmove(token->buff + start - 1, dollar.buff, dollar.len);
+		token->len = start + dollar.len + (token->len - *i);
+		*i = start - 1 + dollar.len;
 	}
 	else
 	{
-		ft_memmove(token->buff + *i - j - 1, token->buff + *i, token->len - *i);
-		token->len -= j + 1;
-		*i -= j + 1;
+		ft_memmove(token->buff + start - 1, token->buff + *i, token->len - *i + 1);
+		token->len -= (*i - start);
+		*i = start - 1;
 		token->buff[token->len] = '\0';
 	}
 	return (true);

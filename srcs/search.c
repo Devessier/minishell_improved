@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/08 16:54:20 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/28 15:36:41 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/03/01 11:17:30 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,7 @@ char			*sh_complete_filename(char *start, size_t len,
 char			*sh_complete_command(char *start, size_t len,
 	char path[PATH_MAX], t_env *env)
 {
-	const t_string	user_path = get_env(env, "PATH");
+	const t_string	user_path = get_env(env, "PATH", 4);
 	const char		*slash = ft_strchr(start, '/');
 	char			tmp;
 	char			*start_end[2];
