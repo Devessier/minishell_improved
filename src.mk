@@ -9,6 +9,7 @@ SRCS += srcs/env.c
 SRCS += srcs/setenv.c
 SRCS += srcs/ast.c
 SRCS += srcs/ast_utils.c
+SRCS += srcs/builtins/index.c
 SRCS += srcs/builtins/cd.c
 SRCS += srcs/builtins/env.c
 SRCS += srcs/builtins/utils.c

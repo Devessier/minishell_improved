@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/15 09:34:03 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/03/01 19:01:41 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/03/02 13:25:03 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,29 +16,7 @@
 #include <sys/syslimits.h>
 #include <sys/stat.h>
 
-t_shell_builtin					g_sh_builtins[] = {
-	{ "env", sh_builtin_env },
-	{ "setenv", sh_builtin_setenv },
-	{ "unsetenv", sh_builtin_unsetenv },
-	{ "echo", sh_builtin_echo },
-	{ "cd", sh_builtin_cd },
-	{ "which", sh_builtin_which },
-	{ "exit", NULL },
-	{ NULL, NULL },
-};
-
 pid_t							g_child_pid;
-
-ssize_t							is_builtin(char *name)
-{
-	size_t	i;
-
-	i = 0;
-	while (g_sh_builtins[i++].name != NULL)
-		if (ft_strcmp(g_sh_builtins[i - 1].name, name) == 0)
-			return (i - 1);
-	return (-1);
-}
 
 t_lookup_result					lookup_path(char *name, char *path_env_var,
 	char path[PATH_MAX])
@@ -89,7 +67,7 @@ t_lookup_result					sh_search_command(t_string *name,
 	return (lookup_path(name->buff, path_env_var.buff, path));
 }
 
-int								copy_args_env(char *buffer[ARG_MAX],
+static int						copy_args_env(char *buffer[ARG_MAX],
 	char path[PATH_MAX], t_ast_node *command, t_env *env)
 {
 	int		argc;
@@ -109,7 +87,7 @@ int								copy_args_env(char *buffer[ARG_MAX],
 	return (argc);
 }
 
-int								exec_xfile(char path[PATH_MAX],
+static int						exec_xfile(char path[PATH_MAX],
 	t_ast_node *command, t_env *env, int *status)
 {
 	char	*buffer[ARG_MAX / 8];
@@ -128,7 +106,7 @@ int								exec_xfile(char path[PATH_MAX],
 	return (0);
 }
 
-int								exec_builtin(t_string *name,
+static int						exec_builtin(t_string *name,
 	t_ast_node *command, t_env *env)
 {
 	size_t	i;
@@ -143,14 +121,38 @@ int								exec_builtin(t_string *name,
 	return (127);
 }
 
+static void						exec_command(t_ast_node *command,
+	int *status, t_env *env, char path[PATH_MAX])
+{
+	t_lookup_result	result;
+
+	if ((result = sh_search_command(&command->payload.command.string,
+			env, path)) == LK_NOT_FOUND)
+	{
+		ft_putf("minishell: command not found: %s\n",
+			command->payload.command.string.buff);
+		*status = 127;
+	}
+	else if (result == LK_NO_RIGHTS)
+		ft_putf("minishell: permission denied: %s\n",
+			command->payload.command.string.buff);
+	else if (result == LK_PATH_TOO_LONG)
+		ft_putf("minishell: path to file is too long: %s\n",
+			command->payload.command.string);
+	else if (result == LK_FOUND)
+		exec_xfile(path, command, env, status);
+	else if (result == LK_BUILTIN)
+		*status = exec_builtin(&command->payload.command.string,
+			command, env);
+}
+
 int								sh_exec(t_string *string, t_env *env)
 {
 	char			path[PATH_MAX];
 	const t_lexer	lexer = sh_lexer(string, env);
 	t_ast_node		root;
-	size_t			i;
-	t_lookup_result	result;
 	int				status;
+	size_t			i;
 
 	if (lexer.len == 0
 		|| (root = sh_construct_ast(&lexer)).payload.root.len == 0)
@@ -161,22 +163,10 @@ int								sh_exec(t_string *string, t_env *env)
 		return (126);
 	}
 	i = 0;
+	status = 0;
 	while (i++ < root.payload.root.len)
-	{
-		if ((result = sh_search_command(&root.payload.root.commands[i - 1].payload.command.string, env, path)) == LK_NOT_FOUND)
-		{
-			ft_putf("minishell: command not found: %s\n", root.payload.root.commands[i - 1].payload.command.string.buff);
-			status = 127;
-		}
-		else if (result == LK_NO_RIGHTS)
-			ft_putf("minishell: permission denied: %s\n", root.payload.root.commands[i - 1].payload.command.string.buff);
-		else if (result == LK_PATH_TOO_LONG)
-			ft_putf("minishell: path to file is too long: %s\n", root.payload.root.commands[i - 1].payload.command.string);
-		else if (result == LK_FOUND)
-			exec_xfile(path, &root.payload.root.commands[i - 1], env, &status);
-		else if (result == LK_BUILTIN)
-			status = exec_builtin(&root.payload.root.commands[i - 1].payload.command.string, &root.payload.root.commands[i - 1], env);
-	}
+		exec_command(&root.payload.root.commands[i - 1],
+			&status, env, path);
 	destroy_ast(root, &lexer);
 	return (status);
 }

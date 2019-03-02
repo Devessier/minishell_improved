@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/24 13:26:29 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/25 14:53:32 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/03/02 12:49:41 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ typedef enum	e_delete_type
 }				t_delete_type;
 
 void			init_ft_rl_reader_string(t_ft_rl_reader *reader,
-		t_string *string);
+		t_string *string, char characters[2]);
 ssize_t			ft_rl_call_bound_functions(char c, t_readline *rl,
 		t_string *line);
 char			*ft_rl_prompt_colour(t_ft_rl_prompt_colour colour);

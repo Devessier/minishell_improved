@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/24 10:46:02 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/25 14:53:11 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/03/02 12:50:50 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,8 @@ static int	ft_readline_loop(t_readline *rl, t_string *line,
 	return (0);
 }
 
-t_string	ft_readline(char *prompt, size_t prompt_len, t_ft_rl_prompt_colour colour)
+t_string	ft_readline(char *prompt, size_t prompt_len,
+	t_ft_rl_prompt_colour colour)
 {
 	t_readline		rl;
 	t_ft_rl_reader	reader;
@@ -59,15 +60,16 @@ t_string	ft_readline(char *prompt, size_t prompt_len, t_ft_rl_prompt_colour colo
 	int				result;
 
 	g_must_print_prompt = isatty(0) && isatty(1);
-	rl = (t_readline) { prompt, prompt_len + 3, ft_rl_prompt_colour(colour), 0, false };
+	rl = (t_readline) { prompt, prompt_len + 3,
+		ft_rl_prompt_colour(colour), 0, false };
 	if (g_must_print_prompt)
 		write(1, CSI "6n", 4);
-	init_ft_rl_reader_string(&reader, &line);
-	ft_bzero(characters, sizeof(characters));
+	init_ft_rl_reader_string(&reader, &line, characters);
 	while (42)
 		if (rl.print_prompt && g_must_print_prompt)
 		{
-			ft_putf(COLOUR_RESET "%s %s" EURO COLOUR_RESET " ", rl.prompt, rl.colour);
+			ft_putf(COLOUR_RESET "%s %s" EURO COLOUR_RESET " ",
+				rl.prompt, rl.colour);
 			rl.print_prompt = false;
 		}
 		else if ((result = ft_readline_loop((t_readline *)&rl,
@@ -148,7 +150,8 @@ bool		ft_rl_handle_character(t_readline *rl, t_ft_rl_reader *reader,
 		ft_rl_move_cursor(rl, string, JUMP_TO_N_CHAR, 1);
 	}
 	else if (characters[1] == 0xC)
-		ft_putf(CLEAR_SCREEN "%s %s" EURO COLOUR_RESET " ", rl->prompt, rl->colour);
+		ft_putf(CLEAR_SCREEN "%s %s" EURO COLOUR_RESET " ",
+			rl->prompt, rl->colour);
 	else if (characters[1] == 0x4)
 		ft_putchar(BELL);
 	return (true);

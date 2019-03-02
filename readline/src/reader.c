@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/24 16:32:37 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/21 12:24:40 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/03/02 12:50:03 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,8 @@ int		ft_rl_getchar_blocking(t_ft_rl_reader *this
 	return (n == 1 ? 1 : -1);
 }
 
-void	init_ft_rl_reader_string(t_ft_rl_reader *reader, t_string *string)
+void	init_ft_rl_reader_string(t_ft_rl_reader *reader,
+	t_string *string, char characters[2])
 {
 	*reader = (t_ft_rl_reader) {
 		.len = 0,
@@ -60,4 +61,5 @@ void	init_ft_rl_reader_string(t_ft_rl_reader *reader, t_string *string)
 		.cap = 0,
 		.buff = NULL,
 	};
+	ft_bzero(characters, sizeof(*characters) * 2);
 }

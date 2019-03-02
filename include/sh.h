@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 20:29:24 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/03/01 18:57:19 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/03/02 12:55:41 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -186,6 +186,8 @@ t_lookup_result			sh_search_command(t_string *name, t_env *env,
 /*
 **  -- Shell builtins : mandatory and optional (bonus) --
 */
+
+ssize_t					is_builtin(const char *name);
 
 typedef int				(*t_shell_builtin_fn)(t_string *, size_t, t_env *);
 
