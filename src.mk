@@ -2,6 +2,7 @@ SRCS += srcs/autocomplete.c
 SRCS += srcs/sh.c
 SRCS += srcs/prompt.c
 SRCS += srcs/exec.c
+SRCS += srcs/lookup.c
 SRCS += srcs/expansion.c
 SRCS += srcs/lexer.c
 SRCS += srcs/lexer_utils.c

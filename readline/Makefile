@@ -6,13 +6,13 @@
 #    By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/01/24 11:27:35 by bdevessi          #+#    #+#              #
-#    Updated: 2019/02/28 17:40:53 by bdevessi         ###   ########.fr        #
+#    Updated: 2019/03/05 12:23:15 by bdevessi         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = readline.a
 
-CFLAGS = -Wall -Wextra -Werror -Iinclude -I../libft/includes -g
+CFLAGS = -Wall -Wextra -Werror -Iinclude -I../libft/includes -g -fsanitize=address
 CC = clang
 
 RM = rm -f

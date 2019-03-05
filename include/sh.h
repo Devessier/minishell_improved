@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 20:29:24 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/03/02 12:55:41 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/03/05 13:17:50 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,6 +140,13 @@ typedef enum			e_lookup_result
 	LK_NO_RIGHTS,
 	LK_PATH_TOO_LONG,
 }						t_lookup_result;
+
+t_lookup_result			lookup_path(char *name, char *path_env_var,
+	char path[PATH_MAX]);
+t_lookup_result			sh_search_command(t_string *name,
+	t_env *env, char path[PATH_MAX]);
+int						copy_args_env(char *buffer[ARG_MAX],
+	char path[PATH_MAX], t_ast_node *command, t_env *env);
 
 int						sh_exec(t_string *string, t_env *env);
 

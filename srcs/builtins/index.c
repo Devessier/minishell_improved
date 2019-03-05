@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/02 12:54:28 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/03/02 13:24:59 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/03/05 13:11:59 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ t_shell_builtin		g_sh_builtins[] = {
 	{ "exit", NULL },
 	{ NULL, NULL },
 };
-
 
 ssize_t				is_builtin(const char *name)
 {
