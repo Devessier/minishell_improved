@@ -43,8 +43,7 @@ int			sh_builtin_setenv(t_string *args, size_t len, t_env *env)
 				" contain alphanumeric characters" "\n");
 		return (1);
 	}
-	put_env(env, args[0].buff, len == 2 ? args[1].buff : "");
-	return (0);
+	return (!put_env(env, args[0].buff, len == 2 ? args[1].buff : ""));
 }
 
 int			sh_builtin_unsetenv(t_string *args, size_t len, t_env *env)

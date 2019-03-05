@@ -98,6 +98,16 @@ static int					not_global_scope(t_lexer *lexer, uint8_t *str,
 	return (str - start);
 }
 
+static bool					append_guard(t_lexer *lexer, t_oken *tok)
+{
+	if (!append_token(lexer, *tok))
+	{
+		ft_free_string(&tok->payload);
+		return (false);
+	}
+	return (true);
+}
+
 bool						lexer_algorithm(t_lexer *lexer, uint8_t *str)
 {
 	t_lexer_algo_fn	lexer_fn;
@@ -113,7 +123,7 @@ bool						lexer_algorithm(t_lexer *lexer, uint8_t *str)
 		lexer_fn = lexer->state == GLOBAL_SCOPE
 			? global_scope : not_global_scope;
 		if ((move = lexer_fn(lexer, str, types, &tok)) == -1)
-			return (false);
+			return (!ft_free_string(&tok.payload));
 		else
 			str += move;
 		types[1] = *types;
@@ -122,7 +132,7 @@ bool						lexer_algorithm(t_lexer *lexer, uint8_t *str)
 	if (tok.payload.len > 0)
 	{
 		tok.type = *types;
-		append_token(lexer, tok);
+		return (append_guard(lexer, &tok));
 	}
 	return (true);
 }

@@ -62,8 +62,8 @@ static bool				autocomplete_init(char c,
 	if (line->len == 0)
 		ft_putchar(BELL);
 	if (c != '\t' || line->len == 0 || completion->len == 0)
-		return (true);
-	return (false);
+		return (false);
+	return (true);
 }
 
 bool					sh_autocomplete(char c, t_readline *rl, t_string *line)
@@ -74,7 +74,7 @@ bool					sh_autocomplete(char c, t_readline *rl, t_string *line)
 	size_t				filename_len;
 	size_t				diff;
 
-	if (autocomplete_init(c, &completion, line))
+	if (!autocomplete_init(c, &completion, line))
 		return (true);
 	diff = completion.start - line->buff;
 	filename = completion.state == AC_COMMAND

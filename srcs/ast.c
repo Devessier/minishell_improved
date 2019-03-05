@@ -6,14 +6,14 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/31 16:54:34 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/03/01 16:02:53 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/03/05 15:20:23 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sh.h"
 #include <stdbool.h>
 
-bool		append_command_to_root(t_ast_node *root, t_ast_node *command)
+static bool	append_command_to_root(t_ast_node *root, t_ast_node *command)
 {
 	t_ast_node	*commands;
 	size_t		i;
@@ -37,7 +37,7 @@ bool		append_command_to_root(t_ast_node *root, t_ast_node *command)
 	return (true);
 }
 
-bool		append_arg_to_root(t_ast_node *command, t_string *arg)
+static bool	append_arg_to_root(t_ast_node *command, t_string *arg)
 {
 	t_string	*args;
 	size_t		cap;
@@ -60,7 +60,7 @@ bool		append_arg_to_root(t_ast_node *command, t_string *arg)
 	return (true);
 }
 
-bool		ast_loop(const t_lexer *lexer, t_ast_node *root,
+static bool	ast_loop(const t_lexer *lexer, t_ast_node *root,
 	t_ast_node *command)
 {
 	ssize_t	i;
@@ -72,7 +72,10 @@ bool		ast_loop(const t_lexer *lexer, t_ast_node *root,
 		if (lexer->tokens[i].type != T_SEMICOLON)
 		{
 			if (args_index == 0)
-				init_ast_command(command, &lexer->tokens[i].payload);
+			{
+				if (!init_ast_command(command, &lexer->tokens[i].payload))
+					return (false);
+			}
 			else if (!append_arg_to_root(command, &lexer->tokens[i].payload))
 				return (false);
 			args_index++;
@@ -80,7 +83,8 @@ bool		ast_loop(const t_lexer *lexer, t_ast_node *root,
 		else if ((*command).payload.command.string.len > 0
 				&& !(*command).payload.command.dirty)
 		{
-			append_command_to_root(root, command);
+			if (!append_command_to_root(root, command))
+				return (false);
 			args_index = 0;
 		}
 	return (true);
@@ -100,6 +104,9 @@ t_ast_node	sh_construct_ast(const t_lexer *lexer)
 	}
 	if (command.payload.command.string.len > 0
 			&& !command.payload.command.dirty)
-		append_command_to_root(&root, &command);
+	{
+		if (!append_command_to_root(&root, &command))
+			return ((t_ast_node) { ROOT, { { 0, 0, NULL } } });
+	}
 	return (root);
 }

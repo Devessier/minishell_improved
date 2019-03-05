@@ -50,9 +50,8 @@ bool						expand_tildes(t_string *token, t_env *env)
 	while (*str != '\0' && *str != '/')
 		home_dir[i++] = *str++;
 	home_dir[i] = '\0';
-	if (!fill_home_directory(home_dir, env))
-		return (false);
-	if (!ft_extend_string(token, ft_strlen(ft_strcat(home_dir, str))))
+	if (!(fill_home_directory(home_dir, env)
+		&& ft_extend_string(token, ft_strlen(ft_strcat(home_dir, str)))))
 		return (false);
 	ft_strcpy(token->buff, home_dir);
 	return (true);

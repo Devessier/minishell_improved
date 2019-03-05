@@ -17,14 +17,13 @@
 t_lookup_result	lookup_path(char *name, char *path_env_var,
 	char path[PATH_MAX])
 {
-	struct stat	stats;
-	size_t		name_len;
-	char		*start;
-	char		*end;
+	const size_t	name_len = ft_strlen(name);
+	struct stat		stats;
+	char			*start;
+	char			*end;
 
 	if (!path_env_var)
 		return (LK_NOT_FOUND);
-	name_len = ft_strlen(name);
 	start = path_env_var;
 	while (*start)
 	{
@@ -63,7 +62,7 @@ t_lookup_result	sh_search_command(t_string *name,
 	return (lookup_path(name->buff, path_env_var.buff, path));
 }
 
-int				copy_args_env(char *buffer[ARG_MAX],
+int				copy_args_env(char **buffer,
 	char path[PATH_MAX], t_ast_node *command, t_env *env)
 {
 	int		argc;

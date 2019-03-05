@@ -46,17 +46,17 @@ static void	init_shell(void)
 	ft_rl_bind_key('\t', sh_autocomplete);
 }
 
-static void	shell_loop(t_env env)
+static void	shell_loop(t_env *env)
 {
 	const int	stdin_tty = isatty(0);
 	int			status;
 	t_string	line;
 	size_t		prompt_len;
 
+	g_env = env;
 	status = 0;
 	while (!g_exit_sh)
 	{
-		g_env = &env;
 		ft_rl_init();
 		line = ft_readline(sh_prompt(&prompt_len), prompt_len,
 			status == 0 ? RL_BLUE : RL_RED);
@@ -66,7 +66,7 @@ static void	shell_loop(t_env env)
 			if (ft_strncmp(line.buff, "exit", 4) == 0)
 				g_exit_sh = true;
 			else
-				status = sh_exec(&line, &env);
+				status = sh_exec(&line, env);
 		}
 		else if (!stdin_tty)
 			g_exit_sh = true;
@@ -82,7 +82,7 @@ int			main(int argc, char **argv, char **envp)
 	(void)argv;
 	env = copy_env(envp);
 	init_shell();
-	shell_loop(env);
+	shell_loop(&env);
 	if (g_must_print_prompt)
 		ft_putf("exit\n");
 	destroy_env((t_env *)&env);

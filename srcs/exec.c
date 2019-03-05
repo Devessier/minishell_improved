@@ -21,7 +21,7 @@ pid_t							g_child_pid;
 static int						exec_xfile(char path[PATH_MAX],
 	t_ast_node *command, t_env *env, int *status)
 {
-	char	*buffer[ARG_MAX / 8];
+	char	*buffer[ARG_MAX / sizeof(char*)];
 	int		argc;
 	char	**envp;
 
