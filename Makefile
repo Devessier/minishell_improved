@@ -6,7 +6,7 @@
 #    By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/11/06 16:01:17 by bdevessi          #+#    #+#              #
-#    Updated: 2019/03/05 12:23:38 by bdevessi         ###   ########.fr        #
+#    Updated: 2019/03/05 14:18:23 by bdevessi         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,10 +22,14 @@ all: $(NAME)
 
 $(OBJS): Makefile include/sh.h libft/libft.a readline/readline.a
 
-$(NAME): $(OBJS)
-	$(MAKE) -C readline readline.a
-	$(MAKE) -C libft libft.a
+$(NAME): libft/libft.a readline/readline.a $(OBJS)
 	$(CC) $(CFLAGS) -o $(NAME) $(OBJS) libft/libft.a readline/readline.a
+
+libft/libft.a:
+	$(MAKE) -C libft
+
+readline/readline.a:
+	$(MAKE) -C readline
 
 clean:
 	rm -f $(OBJS)
