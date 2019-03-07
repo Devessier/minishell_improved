@@ -16,7 +16,7 @@
 char				g_shell_pid[10] = { 0 };
 size_t				g_shell_pid_len = 0;
 
-bool						fill_home_directory(char home_dir[PATH_MAX],
+static bool					fill_home_directory(char home_dir[PATH_MAX],
 	t_env *env)
 {
 	t_string		home;

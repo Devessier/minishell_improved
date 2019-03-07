@@ -24,13 +24,13 @@ t_shell_builtin		g_sh_builtins[] = {
 	{ NULL, NULL },
 };
 
-ssize_t				is_builtin(const char *name)
+bool				is_builtin(const char *name)
 {
 	size_t	i;
 
 	i = 0;
 	while (g_sh_builtins[i++].name != NULL)
 		if (ft_strcmp(g_sh_builtins[i - 1].name, name) == 0)
-			return (i - 1);
-	return (-1);
+			return (true);
+	return (false);
 }

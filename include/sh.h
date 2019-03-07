@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 20:29:24 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/03/05 13:17:50 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/03/07 10:24:15 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,7 @@ typedef int				(*t_lexer_algo_fn)(t_lexer *,
 
 void					init_token(t_oken *tok);
 void					init_lexer(t_lexer *lexer);
+bool					append_guard(t_lexer *lexer, t_oken *tok);
 bool					append_token(t_lexer *this, t_oken token);
 bool					destroy_lexer(const t_lexer *lexer);
 
@@ -194,7 +195,7 @@ t_lookup_result			sh_search_command(t_string *name, t_env *env,
 **  -- Shell builtins : mandatory and optional (bonus) --
 */
 
-ssize_t					is_builtin(const char *name);
+bool					is_builtin(const char *name);
 
 typedef int				(*t_shell_builtin_fn)(t_string *, size_t, t_env *);
 

@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/15 09:30:25 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/03/01 18:57:56 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/03/07 10:23:18 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,17 +98,7 @@ static int					not_global_scope(t_lexer *lexer, uint8_t *str,
 	return (str - start);
 }
 
-static bool					append_guard(t_lexer *lexer, t_oken *tok)
-{
-	if (!append_token(lexer, *tok))
-	{
-		ft_free_string(&tok->payload);
-		return (false);
-	}
-	return (true);
-}
-
-bool						lexer_algorithm(t_lexer *lexer, uint8_t *str)
+static bool					lexer_algorithm(t_lexer *lexer, uint8_t *str)
 {
 	t_lexer_algo_fn	lexer_fn;
 	t_oken_char		types[2];

@@ -100,13 +100,13 @@ t_ast_node	sh_construct_ast(const t_lexer *lexer)
 	if (!ast_loop(lexer, &root, &command))
 	{
 		destroy_ast(root, lexer);
-		return ((t_ast_node) { ROOT, { { 0, 0, NULL } } });
+		return ((t_ast_node) { .tag = ROOT });
 	}
 	if (command.payload.command.string.len > 0
 			&& !command.payload.command.dirty)
 	{
 		if (!append_command_to_root(&root, &command))
-			return ((t_ast_node) { ROOT, { { 0, 0, NULL } } });
+			return ((t_ast_node) { .tag = ROOT });
 	}
 	return (root);
 }

@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/01 16:05:37 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/03/01 17:39:42 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/03/07 10:23:15 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,16 @@ void	init_lexer(t_lexer *lexer)
 		.state = GLOBAL_SCOPE,
 		.tokens = NULL
 	};
+}
+
+bool	append_guard(t_lexer *lexer, t_oken *tok)
+{
+	if (!append_token(lexer, *tok))
+	{
+		ft_free_string(&tok->payload);
+		return (false);
+	}
+	return (true);
 }
 
 bool	append_token(t_lexer *this, t_oken token)

@@ -55,7 +55,7 @@ t_lookup_result	sh_search_command(t_string *name,
 		return (((stats.st_mode & S_IFREG)
 			&& (stats.st_mode & S_IXUSR)) ? LK_FOUND : LK_NO_RIGHTS);
 	}
-	else if (is_builtin(name->buff) != -1)
+	else if (is_builtin(name->buff))
 		return (LK_BUILTIN);
 	if (!(path_env_var.len > 0))
 		return (LK_NOT_FOUND);

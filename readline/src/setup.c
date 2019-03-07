@@ -20,11 +20,10 @@
 static bool					g_ot_sigwinch = false;
 static struct termios		g_original_termios_struct;
 
-static void					handle_sigwinch(int sig)
+void						handle_sigwinch(int sig)
 {
-	if (sig != SIGWINCH)
-		return ;
-	g_ot_sigwinch = true;
+	if (sig == SIGWINCH)
+		g_ot_sigwinch = true;
 }
 
 struct winsize				*ft_rl_terminal_size(t_termsiz_op operation)

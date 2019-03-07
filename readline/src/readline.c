@@ -10,8 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <sys/types.h>
-#include <stdint.h>
 #include <stdbool.h>
 #include <unistd.h>
 #include "readline.h"
@@ -36,7 +34,7 @@ static int	ft_readline_loop(t_readline *rl, t_string *line,
 			return (2);
 		if (!ft_rl_handle_character(rl, reader, line, characters))
 			return (1);
-		if ((*characters = characters[1]) == 0x3 || *characters == 0xd
+		if ((*characters = characters[1]) == 0x3 || *characters == 0xD
 				|| *characters == 0xA)
 		{
 			if (*characters == 0x3)
@@ -96,8 +94,8 @@ static bool	ft_rl_detect_cursor_position(t_readline *rl,
 			return (false);
 		else if (next_c == 'R')
 		{
-			if (ft_atoi(column) != 1)
-				ft_putstr_fd(CSI "330;107;m" "%\n" CSI "0m", 2);
+			if (ft_atoi(column) != 1 && g_must_print_prompt)
+				ft_putstr_fd(CSI "30;107;m" "%" CSI "0m" "\n", 1);
 			rl->print_prompt = true;
 		}
 	}

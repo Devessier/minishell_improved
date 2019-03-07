@@ -1,4 +1,4 @@
-SRCS += srcs/autocomplete.c
+SRCS = srcs/autocomplete.c
 SRCS += srcs/sh.c
 SRCS += srcs/prompt.c
 SRCS += srcs/exec.c
