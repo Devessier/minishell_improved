@@ -6,7 +6,7 @@
 /*   By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/10 17:09:14 by bdevessi          #+#    #+#             */
-/*   Updated: 2019/02/28 15:15:42 by bdevessi         ###   ########.fr       */
+/*   Updated: 2019/03/07 10:13:48 by bdevessi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,8 @@ static void	init_shell(void)
 	signal(SIGQUIT, sighandler);
 	signal(SIGINT, sighandler);
 	signal(SIGTSTP, sighandler);
+	signal(SIGTTIN, sighandler);
+	signal(SIGTTOU, sighandler);
 	ft_rl_bind_key(0x4, sh_exit);
 	ft_rl_bind_key('\t', sh_autocomplete);
 }
