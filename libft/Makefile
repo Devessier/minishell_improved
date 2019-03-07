@@ -6,14 +6,14 @@
 #    By: bdevessi <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/11/08 09:13:12 by bdevessi          #+#    #+#              #
-#    Updated: 2019/03/05 12:22:51 by bdevessi         ###   ########.fr        #
+#    Updated: 2019/03/07 12:26:22 by bdevessi         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = libft.a
 
-CFLAGS = -Wall -Wextra -Werror -I includes -g -fsanitize=address
-CC = clang
+CFLAGS = -Wall -Wextra -Werror -I includes
+CC = gcc
 
 RM = rm -f
 
